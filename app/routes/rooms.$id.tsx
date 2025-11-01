@@ -69,7 +69,7 @@ export default function RoomDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Price per Night</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                ${room.pricePerNight?.toFixed(2) || "0.00"}
+                ₹{room.pricePerNight?.toFixed(2) || "0.00"}
               </dd>
             </div>
             <div>

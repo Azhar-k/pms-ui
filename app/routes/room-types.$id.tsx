@@ -39,7 +39,7 @@ export default function RoomTypeDetailPage() {
           <div>
             <dt className="text-sm font-medium text-gray-500">Base Price per Night</dt>
             <dd className="mt-1 text-sm text-gray-900">
-              ${roomType.basePricePerNight?.toFixed(2) || "0.00"}
+              ₹{roomType.basePricePerNight?.toFixed(2) || "0.00"}
             </dd>
           </div>
           <div>

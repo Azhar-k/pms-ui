@@ -36,7 +36,7 @@ export default function RoomTypesPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{type.name}</h3>
                   <p className="text-sm text-gray-500">
-                    ${type.basePricePerNight?.toFixed(2) || "0.00"} / night
+                    ₹{type.basePricePerNight?.toFixed(2) || "0.00"} / night
                   </p>
                 </div>
               </div>

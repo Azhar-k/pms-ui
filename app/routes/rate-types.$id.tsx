@@ -88,7 +88,7 @@ export default function RateTypeDetailPage() {
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="text-lg font-bold text-gray-900">
-                        ${rate.rate?.toFixed(2) || "0.00"}
+                        ₹{rate.rate?.toFixed(2) || "0.00"}
                       </span>
                       <Form method="post">
                         <input type="hidden" name="action" value="removeRate" />

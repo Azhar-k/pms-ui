@@ -52,7 +52,7 @@ export default function RateTypesPage() {
                       >
                         <span className="text-gray-700">{rate.roomTypeName || `Type ${rate.roomTypeId}`}</span>
                         <span className="font-medium text-gray-900">
-                          ${rate.rate?.toFixed(2) || "0.00"}
+                          ₹{rate.rate?.toFixed(2) || "0.00"}
                         </span>
                       </div>
                     ))}

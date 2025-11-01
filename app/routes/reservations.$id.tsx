@@ -141,7 +141,7 @@ export default function ReservationDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Total Amount</dt>
               <dd className="mt-1 text-sm font-medium text-gray-900">
-                ${reservation.totalAmount?.toFixed(2) || "0.00"}
+                ₹{reservation.totalAmount?.toFixed(2) || "0.00"}
               </dd>
             </div>
             {reservation.actualCheckInTime && (

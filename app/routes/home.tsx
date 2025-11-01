@@ -90,7 +90,7 @@ export default function Dashboard() {
     },
     {
       title: "Total Revenue",
-      value: `$${stats.totalRevenue.toFixed(2)}`,
+      value: `₹${stats.totalRevenue.toFixed(2)}`,
       subtitle: "From paid invoices",
       icon: "💰",
       link: "/invoices",

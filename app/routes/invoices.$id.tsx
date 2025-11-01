@@ -160,10 +160,10 @@ export default function InvoiceDetailPage() {
                         <td className="px-4 py-3 text-sm text-gray-900">{item.description}</td>
                         <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
                         <td className="px-4 py-3 text-sm text-gray-900">
-                          ${item.unitPrice?.toFixed(2) || "0.00"}
+                          ₹{item.unitPrice?.toFixed(2) || "0.00"}
                         </td>
                         <td className="px-4 py-3 text-sm text-right text-gray-900">
-                          ${item.amount?.toFixed(2) || "0.00"}
+                          ₹{item.amount?.toFixed(2) || "0.00"}
                         </td>
                       </tr>
                     ))}
@@ -180,25 +180,25 @@ export default function InvoiceDetailPage() {
               <div className="w-64 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="text-gray-900">${invoice.subtotal?.toFixed(2) || "0.00"}</span>
+                  <span className="text-gray-900">₹{invoice.subtotal?.toFixed(2) || "0.00"}</span>
                 </div>
                 {invoice.taxAmount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tax:</span>
-                    <span className="text-gray-900">${invoice.taxAmount?.toFixed(2) || "0.00"}</span>
+                    <span className="text-gray-900">₹{invoice.taxAmount?.toFixed(2) || "0.00"}</span>
                   </div>
                 )}
                 {invoice.discountAmount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Discount:</span>
                     <span className="text-gray-900">
-                      -${invoice.discountAmount?.toFixed(2) || "0.00"}
+                      -₹{invoice.discountAmount?.toFixed(2) || "0.00"}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between text-base font-bold border-t border-gray-200 pt-2">
                   <span>Total:</span>
-                  <span>${invoice.totalAmount?.toFixed(2) || "0.00"}</span>
+                  <span>₹{invoice.totalAmount?.toFixed(2) || "0.00"}</span>
                 </div>
               </div>
             </div>

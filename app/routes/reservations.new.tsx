@@ -94,7 +94,7 @@ export default function NewReservationPage() {
               <option value="">Select a room</option>
               {rooms.map((room: any) => (
                 <option key={room.id} value={room.id}>
-                  Room {room.roomNumber} - {room.roomType?.name || `Type ${room.roomTypeId}`} - $
+                  Room {room.roomNumber} - {room.roomType?.name || `Type ${room.roomTypeId}`} - ₹
                   {room.pricePerNight?.toFixed(2) || "0.00"}/night
                 </option>
               ))}
