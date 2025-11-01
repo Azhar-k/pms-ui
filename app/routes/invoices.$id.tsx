@@ -1,4 +1,4 @@
-import { useLoaderData, Link, Form, redirect } from "react-router";
+import { useLoaderData, Link, Form, redirect, useActionData } from "react-router";
 import { invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 
@@ -18,24 +18,58 @@ export async function action({ request, params }: { request: Request; params: { 
   try {
     if (actionType === "markAsPaid") {
       const paymentMethod = formData.get("paymentMethod") as string;
+      if (!paymentMethod) {
+        return { error: "Payment method is required" };
+      }
       await invoiceAPI.markAsPaid(Number(params.id), paymentMethod);
     } else if (actionType === "addItem") {
+      const description = formData.get("description") as string;
+      const quantityStr = formData.get("quantity") as string;
+      const unitPriceStr = formData.get("unitPrice") as string;
+      const category = formData.get("category") as string | null;
+
+      // Validate required fields
+      if (!description || !description.trim()) {
+        return { error: "Description is required" };
+      }
+      if (!quantityStr || !unitPriceStr) {
+        return { error: "Quantity and unit price are required" };
+      }
+
+      // Convert and validate numeric values
+      const quantity = parseInt(quantityStr, 10);
+      const unitPrice = parseFloat(unitPriceStr);
+
+      if (isNaN(quantity) || quantity <= 0) {
+        return { error: "Quantity must be a positive number" };
+      }
+      if (isNaN(unitPrice) || unitPrice <= 0) {
+        return { error: "Unit price must be a positive number" };
+      }
+
+      // Calculate amount
+      const amount = quantity * unitPrice;
+
       const data = {
-        description: formData.get("description"),
-        quantity: Number(formData.get("quantity")),
-        unitPrice: Number(formData.get("unitPrice")),
-        category: formData.get("category") || undefined,
+        description: description.trim(),
+        quantity: quantity,
+        unitPrice: unitPrice,
+        amount: amount,
+        category: category?.trim() || undefined,
       };
+
       await invoiceAPI.addItem(Number(params.id), data);
     }
     return redirect(`/invoices/${params.id}`);
   } catch (error) {
-    return { error: "Action failed" };
+    console.error("Error in invoice action:", error);
+    return { error: error instanceof Error ? error.message : "Action failed" };
   }
 }
 
 export default function InvoiceDetailPage() {
   const { invoice } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -75,6 +109,13 @@ export default function InvoiceDetailPage() {
           Back to Invoices
         </Button>
       </div>
+
+      {actionData?.error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="font-medium">Error:</p>
+          <p className="text-sm">{actionData.error}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
@@ -263,9 +304,12 @@ export default function InvoiceDetailPage() {
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Add Item
-                </Button>
+                </button>
               </Form>
             </div>
           )}
@@ -293,9 +337,12 @@ export default function InvoiceDetailPage() {
                     <option value="OTHER">Other</option>
                   </select>
                 </div>
-                <Button type="submit" variant="success" className="w-full">
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 rounded-lg font-medium transition-colors bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Mark as Paid
-                </Button>
+                </button>
               </Form>
             </div>
           )}

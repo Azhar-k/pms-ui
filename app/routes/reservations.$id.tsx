@@ -1,4 +1,4 @@
-import { useLoaderData, Link, Form, redirect } from "react-router";
+import { useLoaderData, Link, Form, redirect, useActionData } from "react-router";
 import { reservationAPI, invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 
@@ -23,16 +23,20 @@ export async function action({ request, params }: { request: Request; params: { 
     } else if (actionType === "cancel") {
       await reservationAPI.cancel(Number(params.id));
     } else if (actionType === "generateInvoice") {
-      await invoiceAPI.generate(Number(params.id));
+      const invoice = await invoiceAPI.generate(Number(params.id));
+      // Redirect to the newly created invoice
+      return redirect(`/invoices/${invoice.id}`);
     }
     return redirect(`/reservations/${params.id}`);
   } catch (error) {
-    return { error: "Action failed" };
+    console.error("Error in reservation action:", error);
+    return { error: error instanceof Error ? error.message : "Action failed" };
   }
 }
 
 export default function ReservationDetailPage() {
   const { reservation } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -73,6 +77,13 @@ export default function ReservationDetailPage() {
           Back to Reservations
         </Button>
       </div>
+
+      {actionData?.error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="font-medium">Error:</p>
+          <p className="text-sm">{actionData.error}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
@@ -199,9 +210,12 @@ export default function ReservationDetailPage() {
             )}
             <Form method="post">
               <input type="hidden" name="action" value="generateInvoice" />
-              <Button type="submit" variant="secondary" className="w-full">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 Generate Invoice
-              </Button>
+              </button>
             </Form>
             <Link
               to={`/invoices?reservationId=${reservation.id}`}
