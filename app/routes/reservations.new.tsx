@@ -1,5 +1,5 @@
-import { Form, useLoaderData, redirect, useSearchParams } from "react-router";
-import { guestAPI, roomAPI, rateTypeAPI } from "../services/api";
+import { Form, useLoaderData, redirect, useSearchParams, useActionData } from "react-router";
+import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../services/api";
 import { Button } from "../components/Button";
 
 export async function loader() {
@@ -11,6 +11,7 @@ export async function loader() {
     ]);
     return { guests, rooms, rateTypes };
   } catch (error) {
+    console.error("Error loading reservation form data:", error);
     return { guests: [], rooms: [], rateTypes: [] };
   }
 }
@@ -31,7 +32,8 @@ export async function action({ request }: { request: Request }) {
     await reservationAPI.create(data);
     return redirect("/reservations");
   } catch (error) {
-    return { error: "Failed to create reservation" };
+    console.error("Error creating reservation:", error);
+    return { error: error instanceof Error ? error.message : "Failed to create reservation" };
   }
 }
 
@@ -40,6 +42,7 @@ export default function NewReservationPage() {
   const [searchParams] = useSearchParams();
   const preSelectedGuestId = searchParams.get("guestId");
   const preSelectedRoomId = searchParams.get("roomId");
+  const actionData = useActionData<typeof action>();
 
   return (
     <div>
@@ -47,6 +50,13 @@ export default function NewReservationPage() {
         <h1 className="text-3xl font-bold text-gray-900">Create New Reservation</h1>
         <p className="mt-2 text-gray-600">Book a room for a guest</p>
       </div>
+
+      {actionData?.error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="font-medium">Error creating reservation:</p>
+          <p className="text-sm">{actionData.error}</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
         <Form method="post" className="space-y-6">
@@ -59,7 +69,7 @@ export default function NewReservationPage() {
               name="guestId"
               defaultValue={preSelectedGuestId || ""}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             >
               <option value="">Select a guest</option>
               {guests.map((guest: any) => (
@@ -79,7 +89,7 @@ export default function NewReservationPage() {
               name="roomId"
               defaultValue={preSelectedRoomId || ""}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             >
               <option value="">Select a room</option>
               {rooms.map((room: any) => (
@@ -99,7 +109,7 @@ export default function NewReservationPage() {
               id="rateTypeId"
               name="rateTypeId"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             >
               <option value="">Select a rate type</option>
               {rateTypes.map((rateType: any) => (
@@ -120,7 +130,7 @@ export default function NewReservationPage() {
                 id="checkInDate"
                 name="checkInDate"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -132,7 +142,7 @@ export default function NewReservationPage() {
                 id="checkOutDate"
                 name="checkOutDate"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -147,7 +157,7 @@ export default function NewReservationPage() {
               name="numberOfGuests"
               min="1"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -159,12 +169,17 @@ export default function NewReservationPage() {
               id="specialRequests"
               name="specialRequests"
               rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
           <div className="flex gap-4">
-            <Button type="submit">Create Reservation</Button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Create Reservation
+            </button>
             <Button to="/reservations" variant="secondary">
               Cancel
             </Button>

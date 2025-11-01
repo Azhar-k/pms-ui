@@ -123,7 +123,7 @@ export default function RateTypeDetailPage() {
                   id="roomTypeId"
                   name="roomTypeId"
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                 >
                   <option value="">Select a room type</option>
                   {availableRoomTypes.map((type: any) => (
@@ -143,7 +143,7 @@ export default function RateTypeDetailPage() {
                   name="rate"
                   step="0.01"
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                 />
               </div>
               <Button type="submit" className="w-full">

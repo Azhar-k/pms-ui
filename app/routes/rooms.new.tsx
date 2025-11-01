@@ -55,7 +55,7 @@ export default function NewRoomPage() {
               id="roomNumber"
               name="roomNumber"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -67,7 +67,7 @@ export default function NewRoomPage() {
               id="roomTypeId"
               name="roomTypeId"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             >
               <option value="">Select a room type</option>
               {roomTypes.map((type: any) => (
@@ -89,7 +89,7 @@ export default function NewRoomPage() {
                 name="pricePerNight"
                 step="0.01"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
 
@@ -100,7 +100,7 @@ export default function NewRoomPage() {
               <select
                 id="status"
                 name="status"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value="AVAILABLE">Available</option>
                 <option value="OCCUPIED">Occupied</option>
@@ -119,7 +119,7 @@ export default function NewRoomPage() {
               type="number"
               id="maxOccupancy"
               name="maxOccupancy"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -131,7 +131,7 @@ export default function NewRoomPage() {
               type="number"
               id="floor"
               name="floor"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -170,7 +170,7 @@ export default function NewRoomPage() {
               id="amenities"
               name="amenities"
               rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -182,7 +182,7 @@ export default function NewRoomPage() {
               id="description"
               name="description"
               rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 

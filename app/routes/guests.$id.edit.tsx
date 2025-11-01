@@ -58,7 +58,7 @@ export default function EditGuestPage() {
                 name="firstName"
                 defaultValue={guest.firstName}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -71,7 +71,7 @@ export default function EditGuestPage() {
                 name="lastName"
                 defaultValue={guest.lastName}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function EditGuestPage() {
                 id="email"
                 name="email"
                 defaultValue={guest.email}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -98,7 +98,7 @@ export default function EditGuestPage() {
                 id="phoneNumber"
                 name="phoneNumber"
                 defaultValue={guest.phoneNumber}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -112,7 +112,7 @@ export default function EditGuestPage() {
               id="address"
               name="address"
               defaultValue={guest.address}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -126,7 +126,7 @@ export default function EditGuestPage() {
                 id="city"
                 name="city"
                 defaultValue={guest.city}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -138,7 +138,7 @@ export default function EditGuestPage() {
                 id="state"
                 name="state"
                 defaultValue={guest.state}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -150,7 +150,7 @@ export default function EditGuestPage() {
                 id="postalCode"
                 name="postalCode"
                 defaultValue={guest.postalCode}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function EditGuestPage() {
               id="country"
               name="country"
               defaultValue={guest.country}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -177,7 +177,7 @@ export default function EditGuestPage() {
                 id="identificationType"
                 name="identificationType"
                 defaultValue={guest.identificationType || ""}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value="">Select ID type</option>
                 <option value="PASSPORT">Passport</option>
@@ -195,7 +195,7 @@ export default function EditGuestPage() {
                 id="identificationNumber"
                 name="identificationNumber"
                 defaultValue={guest.identificationNumber}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>

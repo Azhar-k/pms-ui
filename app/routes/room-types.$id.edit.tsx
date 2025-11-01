@@ -60,7 +60,7 @@ export default function EditRoomTypePage() {
               name="name"
               defaultValue={roomType.name}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -75,7 +75,7 @@ export default function EditRoomTypePage() {
               step="0.01"
               defaultValue={roomType.basePricePerNight}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -89,7 +89,7 @@ export default function EditRoomTypePage() {
               name="maxOccupancy"
               defaultValue={roomType.maxOccupancy}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -103,7 +103,7 @@ export default function EditRoomTypePage() {
                 id="defaultRoomSize"
                 name="defaultRoomSize"
                 defaultValue={roomType.defaultRoomSize}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -116,7 +116,7 @@ export default function EditRoomTypePage() {
                 name="bedType"
                 defaultValue={roomType.bedType}
                 placeholder="e.g., King, Queen, Twin"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function EditRoomTypePage() {
               name="amenities"
               rows={3}
               defaultValue={roomType.amenities}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -199,7 +199,7 @@ export default function EditRoomTypePage() {
               name="description"
               rows={3}
               defaultValue={roomType.description}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 

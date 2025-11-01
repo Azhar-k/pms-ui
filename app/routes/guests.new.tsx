@@ -46,7 +46,7 @@ export default function NewGuestPage() {
                 id="firstName"
                 name="firstName"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -58,7 +58,7 @@ export default function NewGuestPage() {
                 id="lastName"
                 name="lastName"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function NewGuestPage() {
                 type="email"
                 id="email"
                 name="email"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -83,7 +83,7 @@ export default function NewGuestPage() {
                 type="tel"
                 id="phoneNumber"
                 name="phoneNumber"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function NewGuestPage() {
               type="text"
               id="address"
               name="address"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -109,7 +109,7 @@ export default function NewGuestPage() {
                 type="text"
                 id="city"
                 name="city"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -120,7 +120,7 @@ export default function NewGuestPage() {
                 type="text"
                 id="state"
                 name="state"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
             <div>
@@ -131,7 +131,7 @@ export default function NewGuestPage() {
                 type="text"
                 id="postalCode"
                 name="postalCode"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function NewGuestPage() {
               type="text"
               id="country"
               name="country"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -156,7 +156,7 @@ export default function NewGuestPage() {
               <select
                 id="identificationType"
                 name="identificationType"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value="">Select ID type</option>
                 <option value="PASSPORT">Passport</option>
@@ -173,7 +173,7 @@ export default function NewGuestPage() {
                 type="text"
                 id="identificationNumber"
                 name="identificationNumber"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>

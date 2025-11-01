@@ -220,7 +220,7 @@ export default function InvoiceDetailPage() {
                     id="description"
                     name="description"
                     required
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -235,7 +235,7 @@ export default function InvoiceDetailPage() {
                       min="1"
                       defaultValue="1"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                     />
                   </div>
                   <div>
@@ -248,7 +248,7 @@ export default function InvoiceDetailPage() {
                       name="unitPrice"
                       step="0.01"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                     />
                   </div>
                 </div>
@@ -260,7 +260,7 @@ export default function InvoiceDetailPage() {
                     type="text"
                     id="category"
                     name="category"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                   />
                 </div>
                 <Button type="submit" className="w-full">
@@ -283,7 +283,7 @@ export default function InvoiceDetailPage() {
                     id="paymentMethod"
                     name="paymentMethod"
                     required
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
                   >
                     <option value="">Select payment method</option>
                     <option value="CASH">Cash</option>

@@ -59,7 +59,7 @@ export default function EditRoomPage() {
               name="roomNumber"
               defaultValue={room.roomNumber}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -72,7 +72,7 @@ export default function EditRoomPage() {
               name="roomTypeId"
               defaultValue={room.roomTypeId}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             >
               {roomTypes.map((type: any) => (
                 <option key={type.id} value={type.id}>
@@ -94,7 +94,7 @@ export default function EditRoomPage() {
                 step="0.01"
                 defaultValue={room.pricePerNight}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
 
@@ -106,7 +106,7 @@ export default function EditRoomPage() {
                 id="status"
                 name="status"
                 defaultValue={room.status}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value="AVAILABLE">Available</option>
                 <option value="OCCUPIED">Occupied</option>
@@ -126,7 +126,7 @@ export default function EditRoomPage() {
               id="maxOccupancy"
               name="maxOccupancy"
               defaultValue={room.maxOccupancy}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -139,7 +139,7 @@ export default function EditRoomPage() {
               id="floor"
               name="floor"
               defaultValue={room.floor}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -181,7 +181,7 @@ export default function EditRoomPage() {
               name="amenities"
               rows={3}
               defaultValue={room.amenities}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -194,7 +194,7 @@ export default function EditRoomPage() {
               name="description"
               rows={3}
               defaultValue={room.description}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
