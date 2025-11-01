@@ -1,0 +1,2519 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Hotel Management System (PMS) API",
+        "description": "REST API for Hotel Property Management System. This API provides endpoints for managing guests, rooms, reservations, check-in/check-out processes, and invoice generation.",
+        "contact": {
+            "name": "PMS Development Team",
+            "email": "support@pms.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Generated server url"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Rate Type Management",
+            "description": "APIs for managing rate types and room type rates"
+        },
+        {
+            "name": "Invoice Management",
+            "description": "APIs for managing invoices and billing"
+        },
+        {
+            "name": "Reservation Management",
+            "description": "APIs for managing hotel reservations, check-in, and check-out"
+        },
+        {
+            "name": "Room Management",
+            "description": "APIs for managing hotel rooms"
+        },
+        {
+            "name": "Room Type Management",
+            "description": "APIs for managing hotel room types"
+        },
+        {
+            "name": "Guest Management",
+            "description": "APIs for managing hotel guests"
+        }
+    ],
+    "paths": {
+        "/api/rooms/{id}": {
+            "get": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Get room by ID",
+                "description": "Retrieves a room by its unique identifier",
+                "operationId": "getRoomById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Update room",
+                "description": "Updates an existing room's information",
+                "operationId": "updateRoom",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoomDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Room updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Delete room",
+                "description": "Deletes a room from the system",
+                "operationId": "deleteRoom",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Room deleted successfully"
+                    },
+                    "404": {
+                        "description": "Room not found"
+                    }
+                }
+            }
+        },
+        "/api/room-types/{id}": {
+            "get": {
+                "tags": [
+                    "Room Type Management"
+                ],
+                "summary": "Get room type by ID",
+                "description": "Retrieves a room type by its unique identifier",
+                "operationId": "getRoomTypeById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room type found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Room Type Management"
+                ],
+                "summary": "Update room type",
+                "description": "Updates an existing room type's information",
+                "operationId": "updateRoomType",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoomTypeDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Room type updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data or room type name already exists",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Room Type Management"
+                ],
+                "summary": "Delete room type",
+                "description": "Deletes a room type from the system. Cannot delete if rooms are using this type.",
+                "operationId": "deleteRoomType",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Room type deleted successfully"
+                    },
+                    "404": {
+                        "description": "Room type not found"
+                    },
+                    "400": {
+                        "description": "Cannot delete room type as it is in use by rooms"
+                    }
+                }
+            }
+        },
+        "/api/rate-types/{rateTypeId}/room-type-rates/{roomTypeId}": {
+            "get": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Get rate for room type",
+                "description": "Retrieves the rate for a specific room type in a rate type",
+                "operationId": "getRateForRoomType",
+                "parameters": [
+                    {
+                        "name": "rateTypeId",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "roomTypeId",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rate found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rate not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Update room type rate",
+                "description": "Updates the rate for a specific room type in a rate type",
+                "operationId": "updateRoomTypeRate",
+                "parameters": [
+                    {
+                        "name": "rateTypeId",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "roomTypeId",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "rate",
+                        "in": "query",
+                        "description": "New rate value",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room type rate updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rate not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid rate value",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Remove room type rate",
+                "description": "Removes a rate for a specific room type from a rate type",
+                "operationId": "removeRoomTypeRate",
+                "parameters": [
+                    {
+                        "name": "rateTypeId",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "roomTypeId",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Room type rate removed successfully"
+                    },
+                    "404": {
+                        "description": "Rate not found"
+                    }
+                }
+            }
+        },
+        "/api/rate-types/{id}": {
+            "get": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Get rate type by ID",
+                "description": "Retrieves a rate type with all its room type rates",
+                "operationId": "getRateTypeById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rate type found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rate type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Update rate type",
+                "description": "Updates an existing rate type's basic information",
+                "operationId": "updateRateType",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RateTypeDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rate type updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rate type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data or rate type name already exists",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Delete rate type",
+                "description": "Deletes a rate type from the system. Cannot delete if reservations are using this rate type.",
+                "operationId": "deleteRateType",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Rate type deleted successfully"
+                    },
+                    "404": {
+                        "description": "Rate type not found"
+                    },
+                    "400": {
+                        "description": "Cannot delete rate type as it is in use by reservations"
+                    }
+                }
+            }
+        },
+        "/api/guests/{id}": {
+            "get": {
+                "tags": [
+                    "Guest Management"
+                ],
+                "summary": "Get guest by ID",
+                "description": "Retrieves a guest by their unique identifier",
+                "operationId": "getGuestById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Guest ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Guest found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Guest not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Guest Management"
+                ],
+                "summary": "Update guest",
+                "description": "Updates an existing guest's information",
+                "operationId": "updateGuest",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Guest ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuestDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Guest updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Guest not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Guest Management"
+                ],
+                "summary": "Delete guest",
+                "description": "Deletes a guest from the system",
+                "operationId": "deleteGuest",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Guest ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Guest deleted successfully"
+                    },
+                    "404": {
+                        "description": "Guest not found"
+                    }
+                }
+            }
+        },
+        "/api/rooms": {
+            "get": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Get all rooms",
+                "description": "Retrieves a list of all rooms in the system",
+                "operationId": "getAllRooms",
+                "responses": {
+                    "200": {
+                        "description": "List of rooms retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoomDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Create a new room",
+                "description": "Creates a new room record in the system",
+                "operationId": "createRoom",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoomDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Room created successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/room-types": {
+            "get": {
+                "tags": [
+                    "Room Type Management"
+                ],
+                "summary": "Get all room types",
+                "description": "Retrieves a list of all room types in the system",
+                "operationId": "getAllRoomTypes",
+                "responses": {
+                    "200": {
+                        "description": "List of room types retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoomTypeDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Room Type Management"
+                ],
+                "summary": "Create a new room type",
+                "description": "Creates a new room type definition in the system",
+                "operationId": "createRoomType",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoomTypeDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Room type created successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data or room type name already exists",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get all reservations",
+                "description": "Retrieves a list of all reservations in the system",
+                "operationId": "getAllReservations",
+                "responses": {
+                    "200": {
+                        "description": "List of reservations retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReservationDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Create a new reservation",
+                "description": "Creates a new reservation for a guest",
+                "operationId": "createReservation",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReservationDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Reservation created successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data or room not available",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/{id}/check-out": {
+            "post": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Check out a guest",
+                "description": "Performs check-out for a reservation",
+                "operationId": "checkOut",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Check-out successful",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Reservation must be checked in before checkout",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/{id}/check-in": {
+            "post": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Check in a guest",
+                "description": "Performs check-in for a reservation",
+                "operationId": "checkIn",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Check-in successful",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid reservation status for check-in",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Cancel a reservation",
+                "description": "Cancels an existing reservation",
+                "operationId": "cancelReservation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation cancelled successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cannot cancel a checked-out reservation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rate-types": {
+            "get": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Get all rate types",
+                "description": "Retrieves a list of all rate types in the system",
+                "operationId": "getAllRateTypes",
+                "responses": {
+                    "200": {
+                        "description": "List of rate types retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RateTypeDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Create a new rate type",
+                "description": "Creates a new rate type with room type rates",
+                "operationId": "createRateType",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RateTypeDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rate type created successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data or rate type name already exists",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rate-types/{rateTypeId}/room-type-rates": {
+            "post": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Add room type rate",
+                "description": "Adds a rate for a specific room type to a rate type",
+                "operationId": "addRoomTypeRate",
+                "parameters": [
+                    {
+                        "name": "rateTypeId",
+                        "in": "path",
+                        "description": "Rate type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoomTypeRateDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Room type rate added successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rate type or room type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Rate already exists for this room type",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/{invoiceId}/pay": {
+            "post": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Mark invoice as paid",
+                "description": "Marks an invoice as paid and records payment method",
+                "operationId": "markInvoiceAsPaid",
+                "parameters": [
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "paymentMethod",
+                        "in": "query",
+                        "description": "Payment method",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice marked as paid successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invoice not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invoice is already paid",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/{invoiceId}/items": {
+            "post": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Add item to invoice",
+                "description": "Adds a new item to an existing invoice",
+                "operationId": "addInvoiceItem",
+                "parameters": [
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoiceItemDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Item added successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invoice not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cannot add items to a paid invoice",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/generate/{reservationId}": {
+            "post": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Generate invoice",
+                "description": "Generates an invoice for a reservation",
+                "operationId": "generateInvoice",
+                "parameters": [
+                    {
+                        "name": "reservationId",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Invoice generated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invoice already exists for this reservation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/guests": {
+            "get": {
+                "tags": [
+                    "Guest Management"
+                ],
+                "summary": "Get all guests",
+                "description": "Retrieves a list of all guests in the system",
+                "operationId": "getAllGuests",
+                "responses": {
+                    "200": {
+                        "description": "List of guests retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GuestDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Guest Management"
+                ],
+                "summary": "Create a new guest",
+                "description": "Creates a new guest record in the system",
+                "operationId": "createGuest",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuestDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Guest created successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rooms/type/{roomTypeId}": {
+            "get": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Get rooms by room type",
+                "description": "Retrieves all rooms of a specific room type",
+                "operationId": "getRoomsByType",
+                "parameters": [
+                    {
+                        "name": "roomTypeId",
+                        "in": "path",
+                        "description": "Room type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of rooms retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoomDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rooms/number/{roomNumber}": {
+            "get": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Get room by room number",
+                "description": "Retrieves a room by its room number",
+                "operationId": "getRoomByNumber",
+                "parameters": [
+                    {
+                        "name": "roomNumber",
+                        "in": "path",
+                        "description": "Room number",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rooms/available": {
+            "get": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Get available rooms",
+                "description": "Retrieves a list of all available rooms",
+                "operationId": "getAvailableRooms",
+                "responses": {
+                    "200": {
+                        "description": "List of available rooms retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoomDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/room-types/name/{name}": {
+            "get": {
+                "tags": [
+                    "Room Type Management"
+                ],
+                "summary": "Get room type by name",
+                "description": "Retrieves a room type by its name",
+                "operationId": "getRoomTypeByName",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Room type name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room type found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/{id}": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get reservation by ID",
+                "description": "Retrieves a reservation by its unique identifier",
+                "operationId": "getReservationById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/status/{status}": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get reservations by status",
+                "description": "Retrieves all reservations with a specific status",
+                "operationId": "getReservationsByStatus",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "description": "Reservation status",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PENDING",
+                                "CONFIRMED",
+                                "CHECKED_IN",
+                                "CHECKED_OUT",
+                                "CANCELLED",
+                                "NO_SHOW"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reservations retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReservationDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/number/{reservationNumber}": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get reservation by reservation number",
+                "description": "Retrieves a reservation by its reservation number",
+                "operationId": "getReservationByNumber",
+                "parameters": [
+                    {
+                        "name": "reservationNumber",
+                        "in": "path",
+                        "description": "Reservation number",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/guest/{guestId}": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get reservations by guest",
+                "description": "Retrieves all reservations for a specific guest",
+                "operationId": "getReservationsByGuest",
+                "parameters": [
+                    {
+                        "name": "guestId",
+                        "in": "path",
+                        "description": "Guest ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reservations retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReservationDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reservations/date-range": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get reservations by date range",
+                "description": "Retrieves all reservations within a date range",
+                "operationId": "getReservationsByDateRange",
+                "parameters": [
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "Start date (yyyy-MM-dd)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "End date (yyyy-MM-dd)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reservations retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReservationDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rate-types/name/{name}": {
+            "get": {
+                "tags": [
+                    "Rate Type Management"
+                ],
+                "summary": "Get rate type by name",
+                "description": "Retrieves a rate type by its name",
+                "operationId": "getRateTypeByName",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Rate type name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rate type found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rate type not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RateTypeDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices": {
+            "get": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Get all invoices",
+                "description": "Retrieves a list of all invoices in the system",
+                "operationId": "getAllInvoices",
+                "responses": {
+                    "200": {
+                        "description": "List of invoices retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InvoiceDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/{id}": {
+            "get": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Get invoice by ID",
+                "description": "Retrieves an invoice by its unique identifier",
+                "operationId": "getInvoiceById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invoice not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/status/{status}": {
+            "get": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Get invoices by status",
+                "description": "Retrieves all invoices with a specific status",
+                "operationId": "getInvoicesByStatus",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "description": "Invoice status",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PENDING",
+                                "PAID",
+                                "PARTIALLY_PAID",
+                                "OVERDUE",
+                                "CANCELLED",
+                                "REFUNDED"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of invoices retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InvoiceDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/reservation/{reservationId}": {
+            "get": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Get invoices by reservation",
+                "description": "Retrieves all invoices for a specific reservation",
+                "operationId": "getInvoicesByReservation",
+                "parameters": [
+                    {
+                        "name": "reservationId",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of invoices retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InvoiceDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/number/{invoiceNumber}": {
+            "get": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Get invoice by invoice number",
+                "description": "Retrieves an invoice by its invoice number",
+                "operationId": "getInvoiceByNumber",
+                "parameters": [
+                    {
+                        "name": "invoiceNumber",
+                        "in": "path",
+                        "description": "Invoice number",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invoice not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/guests/email/{email}": {
+            "get": {
+                "tags": [
+                    "Guest Management"
+                ],
+                "summary": "Get guest by email",
+                "description": "Retrieves a guest by their email address",
+                "operationId": "getGuestByEmail",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "Guest email",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Guest found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Guest not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "RoomDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roomNumber": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "roomTypeId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "pricePerNight": {
+                        "type": "number"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "AVAILABLE",
+                            "OCCUPIED",
+                            "MAINTENANCE",
+                            "CLEANING",
+                            "RESERVED"
+                        ]
+                    },
+                    "maxOccupancy": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "amenities": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "floor": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "hasBalcony": {
+                        "type": "boolean"
+                    },
+                    "hasView": {
+                        "type": "boolean"
+                    },
+                    "roomType": {
+                        "$ref": "#/components/schemas/RoomTypeDTO"
+                    }
+                },
+                "required": [
+                    "pricePerNight",
+                    "roomNumber",
+                    "roomTypeId"
+                ]
+            },
+            "RoomTypeDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "basePricePerNight": {
+                        "type": "number"
+                    },
+                    "maxOccupancy": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "amenities": {
+                        "type": "string"
+                    },
+                    "defaultRoomSize": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "hasBalcony": {
+                        "type": "boolean"
+                    },
+                    "hasView": {
+                        "type": "boolean"
+                    },
+                    "hasMinibar": {
+                        "type": "boolean"
+                    },
+                    "hasSafe": {
+                        "type": "boolean"
+                    },
+                    "hasAirConditioning": {
+                        "type": "boolean"
+                    },
+                    "bedType": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "basePricePerNight",
+                    "maxOccupancy",
+                    "name"
+                ]
+            },
+            "RateTypeDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "roomTypeRates": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomTypeRateDTO"
+                        }
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            },
+            "RoomTypeRateDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roomTypeId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roomTypeName": {
+                        "type": "string"
+                    },
+                    "rate": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "rate",
+                    "roomTypeId"
+                ]
+            },
+            "GuestDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string",
+                        "pattern": "^[+]?[(]?[0-9]{1,4}[)]?[-\\s.]?[(]?[0-9]{1,4}[)]?[-\\s.]?[0-9]{1,9}$"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "city": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string"
+                    },
+                    "country": {
+                        "type": "string"
+                    },
+                    "postalCode": {
+                        "type": "string"
+                    },
+                    "identificationType": {
+                        "type": "string"
+                    },
+                    "identificationNumber": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "firstName",
+                    "lastName"
+                ]
+            },
+            "ReservationDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "reservationNumber": {
+                        "type": "string"
+                    },
+                    "guestId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roomId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "rateTypeId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "checkInDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "checkOutDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "numberOfGuests": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "PENDING",
+                            "CONFIRMED",
+                            "CHECKED_IN",
+                            "CHECKED_OUT",
+                            "CANCELLED",
+                            "NO_SHOW"
+                        ]
+                    },
+                    "actualCheckInTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "actualCheckOutTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "specialRequests": {
+                        "type": "string"
+                    },
+                    "paymentStatus": {
+                        "type": "string"
+                    },
+                    "totalAmount": {
+                        "type": "number"
+                    },
+                    "depositAmount": {
+                        "type": "number"
+                    },
+                    "guest": {
+                        "$ref": "#/components/schemas/GuestDTO"
+                    },
+                    "room": {
+                        "$ref": "#/components/schemas/RoomDTO"
+                    }
+                },
+                "required": [
+                    "checkInDate",
+                    "checkOutDate",
+                    "guestId",
+                    "numberOfGuests",
+                    "rateTypeId",
+                    "roomId"
+                ]
+            },
+            "InvoiceDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "invoiceNumber": {
+                        "type": "string"
+                    },
+                    "reservationId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "subtotal": {
+                        "type": "number"
+                    },
+                    "taxAmount": {
+                        "type": "number"
+                    },
+                    "discountAmount": {
+                        "type": "number"
+                    },
+                    "totalAmount": {
+                        "type": "number"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "PENDING",
+                            "PAID",
+                            "PARTIALLY_PAID",
+                            "OVERDUE",
+                            "CANCELLED",
+                            "REFUNDED"
+                        ]
+                    },
+                    "issuedDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "dueDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "paidDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "paymentMethod": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/InvoiceItemDTO"
+                        }
+                    },
+                    "reservation": {
+                        "$ref": "#/components/schemas/ReservationDTO"
+                    }
+                },
+                "required": [
+                    "reservationId",
+                    "subtotal",
+                    "taxAmount",
+                    "totalAmount"
+                ]
+            },
+            "InvoiceItemDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "unitPrice": {
+                        "type": "number"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "category": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
