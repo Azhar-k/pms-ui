@@ -98,7 +98,7 @@ export default function NewRateTypePage() {
                       name="rate"
                       step="0.01"
                       placeholder="0.00"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white text-sm"
                     />
                   </div>
                 </div>
