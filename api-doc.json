@@ -317,6 +317,112 @@
                 }
             }
         },
+        "/api/reservations/{id}": {
+            "get": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Get reservation by ID",
+                "description": "Retrieves a reservation by its unique identifier",
+                "operationId": "getReservationById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Reservation Management"
+                ],
+                "summary": "Update a reservation",
+                "description": "Updates an existing reservation. Allows changing room, dates, guest, rate type, and other details. Cannot update checked-out reservations.",
+                "operationId": "updateReservation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReservationDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reservation updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data, room not available, or cannot update checked-out reservation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReservationDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/rate-types/{rateTypeId}/room-type-rates/{roomTypeId}": {
             "get": {
                 "tags": [
@@ -1691,50 +1797,6 @@
                 }
             }
         },
-        "/api/reservations/{id}": {
-            "get": {
-                "tags": [
-                    "Reservation Management"
-                ],
-                "summary": "Get reservation by ID",
-                "description": "Retrieves a reservation by its unique identifier",
-                "operationId": "getReservationById",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Reservation ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Reservation found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ReservationDTO"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Reservation not found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ReservationDTO"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/reservations/status/{status}": {
             "get": {
                 "tags": [
@@ -2293,54 +2355,6 @@
                     "name"
                 ]
             },
-            "RateTypeDTO": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "name": {
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "roomTypeRates": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/RoomTypeRateDTO"
-                        }
-                    }
-                },
-                "required": [
-                    "name"
-                ]
-            },
-            "RoomTypeRateDTO": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "roomTypeId": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "roomTypeName": {
-                        "type": "string"
-                    },
-                    "rate": {
-                        "type": "number"
-                    }
-                },
-                "required": [
-                    "rate",
-                    "roomTypeId"
-                ]
-            },
             "GuestDTO": {
                 "type": "object",
                 "properties": {
@@ -2469,6 +2483,54 @@
                     "numberOfGuests",
                     "rateTypeId",
                     "roomId"
+                ]
+            },
+            "RateTypeDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "roomTypeRates": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomTypeRateDTO"
+                        }
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            },
+            "RoomTypeRateDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roomTypeId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roomTypeName": {
+                        "type": "string"
+                    },
+                    "rate": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "rate",
+                    "roomTypeId"
                 ]
             },
             "InvoiceDTO": {
