@@ -1,7 +1,8 @@
-import { useLoaderData, Link, useNavigate } from "react-router";
+import { useLoaderData, Link, useNavigate, useRevalidator } from "react-router";
 import { roomAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { Form } from "react-router";
+import { RoomKanbanBoard } from "../components/RoomKanbanBoard";
 
 export async function loader() {
   try {
@@ -15,6 +16,7 @@ export async function loader() {
 export default function RoomsPage() {
   const { rooms } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const revalidator = useRevalidator();
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -23,6 +25,11 @@ export default function RoomsPage() {
       CLEANING: "bg-blue-100 text-blue-800",
     };
     return colors[status] || "bg-gray-100 text-gray-800";
+  };
+
+  const handleRoomUpdate = () => {
+    // Revalidate the loader data to refresh rooms
+    revalidator.revalidate();
   };
 
   return (
@@ -35,7 +42,15 @@ export default function RoomsPage() {
         <Button to="/rooms/new">Add New Room</Button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="space-y-6">
+        {/* Kanban Board */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Room Status Board</h2>
+          <RoomKanbanBoard rooms={rooms} onRoomUpdate={handleRoomUpdate} />
+        </div>
+
+        {/* Table View */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -108,6 +123,7 @@ export default function RoomsPage() {
             )}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );
