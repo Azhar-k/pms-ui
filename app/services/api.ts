@@ -102,6 +102,7 @@ export const reservationAPI = {
   getByDateRange: (startDate: string, endDate: string) =>
     fetchAPI<any[]>(`/reservations/date-range?startDate=${startDate}&endDate=${endDate}`),
   create: (data: any) => fetchAPI<any>('/reservations', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: number, data: any) => fetchAPI<any>(`/reservations/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   checkIn: (id: number) => fetchAPI<any>(`/reservations/${id}/check-in`, { method: 'POST' }),
   checkOut: (id: number) => fetchAPI<any>(`/reservations/${id}/check-out`, { method: 'POST' }),
   cancel: (id: number) => fetchAPI<any>(`/reservations/${id}/cancel`, { method: 'POST' }),

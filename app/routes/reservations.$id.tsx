@@ -63,6 +63,7 @@ export default function ReservationDetailPage() {
   const canCheckIn = reservation.status === "CONFIRMED" || reservation.status === "PENDING";
   const canCheckOut = reservation.status === "CHECKED_IN";
   const canCancel = reservation.status !== "CHECKED_OUT" && reservation.status !== "CANCELLED";
+  const canEdit = reservation.status !== "CHECKED_OUT";
 
   return (
     <div>
@@ -184,6 +185,14 @@ export default function ReservationDetailPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Actions</h2>
           <div className="space-y-3">
+            {canEdit && (
+              <Link
+                to={`/reservations/${reservation.id}/edit`}
+                className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              >
+                Edit Reservation
+              </Link>
+            )}
             {canCheckIn && (
               <Form method="post">
                 <input type="hidden" name="action" value="checkIn" />

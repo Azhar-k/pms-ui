@@ -21,6 +21,7 @@ export default [
     route("guests/:id/edit", "routes/guests.$id.edit.tsx"),
     route("reservations", "routes/reservations.tsx"),
     route("reservations/new", "routes/reservations.new.tsx"),
+    route("reservations/:id/edit", "routes/reservations.$id.edit.tsx"),
     route("reservations/:id", "routes/reservations.$id.tsx"),
     route("invoices", "routes/invoices.tsx"),
     route("invoices/:id", "routes/invoices.$id.tsx"),
