@@ -18,11 +18,9 @@ export default function RoomsPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      AVAILABLE: "bg-green-100 text-green-800",
-      OCCUPIED: "bg-red-100 text-red-800",
+      READY: "bg-green-100 text-green-800",
       MAINTENANCE: "bg-yellow-100 text-yellow-800",
       CLEANING: "bg-blue-100 text-blue-800",
-      RESERVED: "bg-purple-100 text-purple-800",
     };
     return colors[status] || "bg-gray-100 text-gray-800";
   };
@@ -51,9 +49,6 @@ export default function RoomsPage() {
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Price/Night
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Max Occupancy
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -64,7 +59,7 @@ export default function RoomsPage() {
           <tbody className="bg-white divide-y divide-gray-200">
             {rooms.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
                   No rooms found. Create your first room!
                 </td>
               </tr>
@@ -90,9 +85,6 @@ export default function RoomsPage() {
                     >
                       {room.status}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ₹{room.pricePerNight?.toFixed(2) || "0.00"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {room.maxOccupancy || "N/A"}

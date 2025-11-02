@@ -19,8 +19,7 @@ export async function action({ request, params }: { request: Request; params: { 
   const data = {
     roomNumber: formData.get("roomNumber"),
     roomTypeId: Number(formData.get("roomTypeId")),
-    pricePerNight: Number(formData.get("pricePerNight")),
-    status: formData.get("status") || "AVAILABLE",
+    status: formData.get("status") || "READY",
     maxOccupancy: formData.get("maxOccupancy") ? Number(formData.get("maxOccupancy")) : undefined,
     amenities: formData.get("amenities") || undefined,
     description: formData.get("description") || undefined,
@@ -82,39 +81,20 @@ export default function EditRoomPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="pricePerNight" className="block text-sm font-medium text-gray-700">
-                Price per Night *
-              </label>
-              <input
-                type="number"
-                id="pricePerNight"
-                name="pricePerNight"
-                step="0.01"
-                defaultValue={room.pricePerNight}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                defaultValue={room.status}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
-              >
-                <option value="AVAILABLE">Available</option>
-                <option value="OCCUPIED">Occupied</option>
-                <option value="MAINTENANCE">Maintenance</option>
-                <option value="CLEANING">Cleaning</option>
-                <option value="RESERVED">Reserved</option>
-              </select>
-            </div>
+          <div>
+            <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              defaultValue={room.status}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
+            >
+              <option value="READY">Ready</option>
+              <option value="MAINTENANCE">Maintenance</option>
+              <option value="CLEANING">Cleaning</option>
+            </select>
           </div>
 
           <div>

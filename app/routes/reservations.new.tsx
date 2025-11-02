@@ -1,18 +1,18 @@
 import { Form, useLoaderData, redirect, useSearchParams, useActionData } from "react-router";
 import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { useState, useEffect } from "react";
 
 export async function loader() {
   try {
-    const [guests, rooms, rateTypes] = await Promise.all([
+    const [guests, rateTypes] = await Promise.all([
       guestAPI.getAll(),
-      roomAPI.getAvailable(),
       rateTypeAPI.getAll(),
     ]);
-    return { guests, rooms, rateTypes };
+    return { guests, rateTypes };
   } catch (error) {
     console.error("Error loading reservation form data:", error);
-    return { guests: [], rooms: [], rateTypes: [] };
+    return { guests: [], rateTypes: [] };
   }
 }
 
@@ -38,11 +38,50 @@ export async function action({ request }: { request: Request }) {
 }
 
 export default function NewReservationPage() {
-  const { guests, rooms, rateTypes } = useLoaderData<typeof loader>();
+  const { guests, rateTypes } = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
   const preSelectedGuestId = searchParams.get("guestId");
   const preSelectedRoomId = searchParams.get("roomId");
   const actionData = useActionData<typeof action>();
+  
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [checkInDate, setCheckInDate] = useState<string>("");
+  const [checkOutDate, setCheckOutDate] = useState<string>("");
+  const [loadingRooms, setLoadingRooms] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchAvailableRooms = async () => {
+      if (checkInDate && checkOutDate) {
+        // Validate that check-out is after check-in
+        if (new Date(checkOutDate) <= new Date(checkInDate)) {
+          setRooms([]);
+          return;
+        }
+        
+        setLoadingRooms(true);
+        try {
+          const availableRooms = await roomAPI.getAvailableForDateRange(checkInDate, checkOutDate);
+          setRooms(availableRooms);
+        } catch (error) {
+          console.error("Error fetching available rooms:", error);
+          setRooms([]);
+        } finally {
+          setLoadingRooms(false);
+        }
+      } else {
+        // If dates are not selected, use default available rooms endpoint
+        try {
+          const availableRooms = await roomAPI.getAvailable();
+          setRooms(availableRooms);
+        } catch (error) {
+          console.error("Error fetching available rooms:", error);
+          setRooms([]);
+        }
+      }
+    };
+
+    fetchAvailableRooms();
+  }, [checkInDate, checkOutDate]);
 
   return (
     <div>
@@ -80,25 +119,62 @@ export default function NewReservationPage() {
             </select>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700">
+                Check-in Date *
+              </label>
+              <input
+                type="date"
+                id="checkInDate"
+                name="checkInDate"
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
+              />
+            </div>
+            <div>
+              <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700">
+                Check-out Date *
+              </label>
+              <input
+                type="date"
+                id="checkOutDate"
+                name="checkOutDate"
+                value={checkOutDate}
+                onChange={(e) => setCheckOutDate(e.target.value)}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
+              />
+            </div>
+          </div>
+
           <div>
             <label htmlFor="roomId" className="block text-sm font-medium text-gray-700">
-              Room *
+              Room * {loadingRooms && <span className="text-sm text-gray-500">(Loading...)</span>}
             </label>
             <select
               id="roomId"
               name="roomId"
               defaultValue={preSelectedRoomId || ""}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
+              disabled={loadingRooms}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
-              <option value="">Select a room</option>
+              <option value="">Select a room {checkInDate && checkOutDate ? `(for ${checkInDate} to ${checkOutDate})` : ""}</option>
+              {rooms.length === 0 && !loadingRooms && checkInDate && checkOutDate && (
+                <option value="" disabled>No rooms available for selected dates</option>
+              )}
               {rooms.map((room: any) => (
                 <option key={room.id} value={room.id}>
-                  Room {room.roomNumber} - {room.roomType?.name || `Type ${room.roomTypeId}`} - ₹
-                  {room.pricePerNight?.toFixed(2) || "0.00"}/night
+                  Room {room.roomNumber} - {room.roomType?.name || `Type ${room.roomTypeId}`}
                 </option>
               ))}
             </select>
+            {checkInDate && checkOutDate && new Date(checkOutDate) <= new Date(checkInDate) && (
+              <p className="mt-1 text-sm text-red-600">Check-out date must be after check-in date</p>
+            )}
           </div>
 
           <div>
@@ -118,33 +194,6 @@ export default function NewReservationPage() {
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700">
-                Check-in Date *
-              </label>
-              <input
-                type="date"
-                id="checkInDate"
-                name="checkInDate"
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
-              />
-            </div>
-            <div>
-              <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700">
-                Check-out Date *
-              </label>
-              <input
-                type="date"
-                id="checkOutDate"
-                name="checkOutDate"
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
-              />
-            </div>
           </div>
 
           <div>

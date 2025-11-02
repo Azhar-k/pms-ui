@@ -11,8 +11,8 @@ export async function loader() {
       invoiceAPI.getAll().catch(() => []),
     ]);
 
-    const availableRooms = rooms.filter((r: any) => r.status === "AVAILABLE").length;
-    const occupiedRooms = rooms.filter((r: any) => r.status === "OCCUPIED").length;
+    const readyRooms = rooms.filter((r: any) => r.status === "READY").length;
+    const maintenanceRooms = rooms.filter((r: any) => r.status === "MAINTENANCE").length;
     const pendingReservations = reservations.filter((r: any) => r.status === "PENDING").length;
     const checkedInReservations = reservations.filter((r: any) => r.status === "CHECKED_IN").length;
     const pendingInvoices = invoices.filter((i: any) => i.status === "PENDING").length;
@@ -23,8 +23,8 @@ export async function loader() {
     return {
       stats: {
         totalRooms: rooms.length,
-        availableRooms,
-        occupiedRooms,
+        readyRooms,
+        maintenanceRooms,
         totalGuests: guests.length,
         totalReservations: reservations.length,
         pendingReservations,
@@ -38,8 +38,8 @@ export async function loader() {
     return {
       stats: {
         totalRooms: 0,
-        availableRooms: 0,
-        occupiedRooms: 0,
+        readyRooms: 0,
+        maintenanceRooms: 0,
         totalGuests: 0,
         totalReservations: 0,
         pendingReservations: 0,
@@ -59,7 +59,7 @@ export default function Dashboard() {
     {
       title: "Total Rooms",
       value: stats.totalRooms,
-      subtitle: `${stats.availableRooms} available, ${stats.occupiedRooms} occupied`,
+      subtitle: `${stats.readyRooms} ready, ${stats.maintenanceRooms} in maintenance`,
       icon: "🏨",
       link: "/rooms",
       color: "blue",

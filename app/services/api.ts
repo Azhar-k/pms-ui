@@ -47,6 +47,8 @@ export const roomAPI = {
   getByNumber: (roomNumber: string) => fetchAPI<any>(`/rooms/number/${roomNumber}`),
   getByType: (roomTypeId: number) => fetchAPI<any[]>(`/rooms/type/${roomTypeId}`),
   getAvailable: () => fetchAPI<any[]>('/rooms/available'),
+  getAvailableForDateRange: (checkInDate: string, checkOutDate: string) =>
+    fetchAPI<any[]>(`/rooms/available/range?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`),
   create: (data: any) => fetchAPI<any>('/rooms', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: any) => fetchAPI<any>(`/rooms/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: number) => fetchAPI<void>(`/rooms/${id}`, { method: 'DELETE' }),

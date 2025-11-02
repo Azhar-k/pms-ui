@@ -16,11 +16,9 @@ export default function RoomDetailPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      AVAILABLE: "bg-green-100 text-green-800",
-      OCCUPIED: "bg-red-100 text-red-800",
+      READY: "bg-green-100 text-green-800",
       MAINTENANCE: "bg-yellow-100 text-yellow-800",
       CLEANING: "bg-blue-100 text-blue-800",
-      RESERVED: "bg-purple-100 text-purple-800",
     };
     return colors[status] || "bg-gray-100 text-gray-800";
   };
@@ -64,12 +62,6 @@ export default function RoomDetailPage() {
                 >
                   {room.status}
                 </span>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Price per Night</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                ₹{room.pricePerNight?.toFixed(2) || "0.00"}
               </dd>
             </div>
             <div>

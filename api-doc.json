@@ -1569,11 +1569,71 @@
                     "Room Management"
                 ],
                 "summary": "Get available rooms",
-                "description": "Retrieves a list of all available rooms",
+                "description": "Retrieves a list of available rooms for today (defaults to today and tomorrow). Room availability is determined by date range and reservation conflicts, not just room status.",
                 "operationId": "getAvailableRooms",
                 "responses": {
                     "200": {
                         "description": "List of available rooms retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoomDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rooms/available/range": {
+            "get": {
+                "tags": [
+                    "Room Management"
+                ],
+                "summary": "Get available rooms for date range",
+                "description": "Retrieves a list of available rooms for a specific date range. Room availability is determined by checking room status (must be READY) and reservation conflicts for the given date range.",
+                "operationId": "getAvailableRoomsForDateRange",
+                "parameters": [
+                    {
+                        "name": "checkInDate",
+                        "in": "query",
+                        "description": "Check-in date (format: yyyy-MM-dd)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "checkOutDate",
+                        "in": "query",
+                        "description": "Check-out date (format: yyyy-MM-dd)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of available rooms retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoomDTO"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid date range",
                         "content": {
                             "*/*": {
                                 "schema": {
@@ -2143,17 +2203,12 @@
                         "type": "integer",
                         "format": "int64"
                     },
-                    "pricePerNight": {
-                        "type": "number"
-                    },
                     "status": {
                         "type": "string",
                         "enum": [
-                            "AVAILABLE",
-                            "OCCUPIED",
+                            "READY",
                             "MAINTENANCE",
-                            "CLEANING",
-                            "RESERVED"
+                            "CLEANING"
                         ]
                     },
                     "maxOccupancy": {
@@ -2181,7 +2236,6 @@
                     }
                 },
                 "required": [
-                    "pricePerNight",
                     "roomNumber",
                     "roomTypeId"
                 ]
