@@ -118,6 +118,8 @@ export const invoiceAPI = {
   generate: (reservationId: number) => fetchAPI<any>(`/invoices/generate/${reservationId}`, { method: 'POST' }),
   addItem: (invoiceId: number, data: any) =>
     fetchAPI<any>(`/invoices/${invoiceId}/items`, { method: 'POST', body: JSON.stringify(data) }),
+  removeItem: (invoiceId: number, itemId: number) =>
+    fetchAPI<any>(`/invoices/${invoiceId}/items/${itemId}`, { method: 'DELETE' }),
   markAsPaid: (invoiceId: number, paymentMethod: string) =>
     fetchAPI<any>(`/invoices/${invoiceId}/pay?paymentMethod=${encodeURIComponent(paymentMethod)}`, { method: 'POST' }),
 };

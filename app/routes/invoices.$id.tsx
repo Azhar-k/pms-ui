@@ -59,6 +59,16 @@ export async function action({ request, params }: { request: Request; params: { 
       };
 
       await invoiceAPI.addItem(Number(params.id), data);
+    } else if (actionType === "removeItem") {
+      const itemIdStr = formData.get("itemId") as string;
+      if (!itemIdStr) {
+        return { error: "Item ID is required" };
+      }
+      const itemId = parseInt(itemIdStr, 10);
+      if (isNaN(itemId)) {
+        return { error: "Invalid item ID" };
+      }
+      await invoiceAPI.removeItem(Number(params.id), itemId);
     }
     return redirect(`/invoices/${params.id}`);
   } catch (error) {
@@ -94,6 +104,7 @@ export default function InvoiceDetailPage() {
   };
 
   const canAddItem = invoice.status === "PENDING";
+  const canRemoveItem = invoice.status === "PENDING";
   const canMarkAsPaid = invoice.status === "PENDING";
 
   return (
@@ -193,6 +204,11 @@ export default function InvoiceDetailPage() {
                       <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
                         Amount
                       </th>
+                      {canRemoveItem && (
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                          Actions
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -206,6 +222,25 @@ export default function InvoiceDetailPage() {
                         <td className="px-4 py-3 text-sm text-right text-gray-900">
                           ₹{item.amount?.toFixed(2) || "0.00"}
                         </td>
+                        {canRemoveItem && (
+                          <td className="px-4 py-3 text-sm text-right">
+                            <Form method="post" className="inline">
+                              <input type="hidden" name="action" value="removeItem" />
+                              <input type="hidden" name="itemId" value={item.id} />
+                              <button
+                                type="submit"
+                                className="text-red-600 hover:text-red-900 font-medium text-sm"
+                                onClick={(e) => {
+                                  if (!confirm(`Are you sure you want to remove "${item.description}" from this invoice?`)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              >
+                                Remove
+                              </button>
+                            </Form>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
