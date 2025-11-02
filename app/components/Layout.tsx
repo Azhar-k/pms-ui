@@ -4,7 +4,6 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
   { name: "Rooms", href: "/rooms", icon: "🏨" },
   { name: "Room Types", href: "/room-types", icon: "🛏️" },
-  { name: "Rate Types", href: "/rate-types", icon: "💰" },
   { name: "Guests", href: "/guests", icon: "👤" },
   { name: "Reservations", href: "/reservations", icon: "📅" },
   { name: "Invoices", href: "/invoices", icon: "🧾" },
@@ -26,7 +25,9 @@ export default function Layout() {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
+              // Highlight both /room-types and /rate-types as active since they show the same combined page
+              const isActive = location.pathname === item.href || 
+                (item.href === "/room-types" && location.pathname.startsWith("/rate-types"));
               return (
                 <Link
                   key={item.name}
