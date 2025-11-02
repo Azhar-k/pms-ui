@@ -138,17 +138,17 @@ export default function InvoiceDetailPage() {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Reservation</dt>
+              <dt className="text-sm font-medium text-gray-500">Booking</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 {invoice.reservation ? (
                   <Link
-                    to={`/reservations/${invoice.reservationId}`}
+                    to={`/bookings/${invoice.reservationId}`}
                     className="text-blue-600 hover:text-blue-900"
                   >
-                    Reservation #{invoice.reservation.id}
+                    Booking #{invoice.reservation.id}
                   </Link>
                 ) : (
-                  `Reservation #${invoice.reservationId}`
+                  `Booking #${invoice.reservationId}`
                 )}
               </dd>
             </div>

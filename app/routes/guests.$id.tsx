@@ -104,16 +104,16 @@ export default function GuestDetailPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div className="space-y-3">
             <Link
-              to={`/reservations/new?guestId=${guest.id}`}
+              to={`/bookings/new?guestId=${guest.id}`}
               className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
-              Create Reservation
+              Create Booking
             </Link>
             <Link
-              to={`/reservations?guestId=${guest.id}`}
+              to={`/bookings?guestId=${guest.id}`}
               className="block w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
             >
-              View Reservations
+              View Bookings
             </Link>
           </div>
         </div>

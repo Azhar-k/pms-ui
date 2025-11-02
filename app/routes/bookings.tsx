@@ -11,7 +11,7 @@ export async function loader() {
   }
 }
 
-export default function ReservationsPage() {
+export default function BookingsPage() {
   const { reservations } = useLoaderData<typeof loader>();
 
   const getStatusColor = (status: string) => {
@@ -35,10 +35,10 @@ export default function ReservationsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Reservations</h1>
-          <p className="mt-2 text-gray-600">Manage hotel reservations</p>
+          <h1 className="text-3xl font-bold text-gray-900">Bookings</h1>
+          <p className="mt-2 text-gray-600">Manage hotel bookings</p>
         </div>
-        <Button to="/reservations/new">Create New Reservation</Button>
+        <Button to="/bookings/new">Create New Booking</Button>
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -46,7 +46,7 @@ export default function ReservationsPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Reservation #
+                Booking #
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Guest
@@ -72,7 +72,7 @@ export default function ReservationsPage() {
             {reservations.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                  No reservations found. Create your first reservation!
+                  No bookings found. Create your first booking!
                 </td>
               </tr>
             ) : (
@@ -115,7 +115,7 @@ export default function ReservationsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      to={`/reservations/${reservation.id}`}
+                      to={`/bookings/${reservation.id}`}
                       className="text-blue-600 hover:text-blue-900"
                     >
                       View

@@ -12,7 +12,7 @@ export async function loader({ params }: { params: { id: string } }) {
     ]);
     return { reservation, guests, rateTypes };
   } catch (error) {
-    throw new Response("Reservation not found", { status: 404 });
+    throw new Response("Booking not found", { status: 404 });
   }
 }
 
@@ -30,14 +30,14 @@ export async function action({ request, params }: { request: Request; params: { 
 
   try {
     await reservationAPI.update(Number(params.id), data);
-    return redirect(`/reservations/${params.id}`);
+    return redirect(`/bookings/${params.id}`);
   } catch (error) {
-    console.error("Error updating reservation:", error);
-    return { error: error instanceof Error ? error.message : "Failed to update reservation" };
+    console.error("Error updating booking:", error);
+    return { error: error instanceof Error ? error.message : "Failed to update booking" };
   }
 }
 
-export default function EditReservationPage() {
+export default function EditBookingPage() {
   const { reservation, guests, rateTypes } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   
@@ -106,17 +106,17 @@ export default function EditReservationPage() {
     return (
       <div>
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Edit Reservation</h1>
-          <p className="mt-2 text-gray-600">Update reservation information</p>
+          <h1 className="text-3xl font-bold text-gray-900">Edit Booking</h1>
+          <p className="mt-2 text-gray-600">Update booking information</p>
         </div>
         <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
             <p className="font-medium">Cannot Edit</p>
-            <p className="text-sm">Cannot update a checked-out reservation.</p>
+            <p className="text-sm">Cannot update a checked-out booking.</p>
           </div>
           <div className="mt-4">
-            <Button to={`/reservations/${reservation.id}`} variant="secondary">
-              Back to Reservation
+            <Button to={`/bookings/${reservation.id}`} variant="secondary">
+              Back to Booking
             </Button>
           </div>
         </div>
@@ -127,13 +127,13 @@ export default function EditReservationPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Edit Reservation</h1>
-        <p className="mt-2 text-gray-600">Update reservation information</p>
+        <h1 className="text-3xl font-bold text-gray-900">Edit Booking</h1>
+        <p className="mt-2 text-gray-600">Update booking information</p>
       </div>
 
       {actionData?.error && (
         <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-          <p className="font-medium">Error updating reservation:</p>
+          <p className="font-medium">Error updating booking:</p>
           <p className="text-sm">{actionData.error}</p>
         </div>
       )}
@@ -271,9 +271,9 @@ export default function EditReservationPage() {
               type="submit"
               className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Update Reservation
+              Update Booking
             </button>
-            <Button to={`/reservations/${reservation.id}`} variant="secondary">
+            <Button to={`/bookings/${reservation.id}`} variant="secondary">
               Cancel
             </Button>
           </div>

@@ -11,7 +11,7 @@ export async function loader() {
     ]);
     return { guests, rateTypes };
   } catch (error) {
-    console.error("Error loading reservation form data:", error);
+    console.error("Error loading booking form data:", error);
     return { guests: [], rateTypes: [] };
   }
 }
@@ -30,14 +30,14 @@ export async function action({ request }: { request: Request }) {
 
   try {
     await reservationAPI.create(data);
-    return redirect("/reservations");
+    return redirect("/bookings");
   } catch (error) {
-    console.error("Error creating reservation:", error);
-    return { error: error instanceof Error ? error.message : "Failed to create reservation" };
+    console.error("Error creating booking:", error);
+    return { error: error instanceof Error ? error.message : "Failed to create booking" };
   }
 }
 
-export default function NewReservationPage() {
+export default function NewBookingPage() {
   const { guests, rateTypes } = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
   const preSelectedGuestId = searchParams.get("guestId");
@@ -86,13 +86,13 @@ export default function NewReservationPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Create New Reservation</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Create New Booking</h1>
         <p className="mt-2 text-gray-600">Book a room for a guest</p>
       </div>
 
       {actionData?.error && (
         <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-          <p className="font-medium">Error creating reservation:</p>
+          <p className="font-medium">Error creating booking:</p>
           <p className="text-sm">{actionData.error}</p>
         </div>
       )}
@@ -227,9 +227,9 @@ export default function NewReservationPage() {
               type="submit"
               className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Reservation
+              Create Booking
             </button>
-            <Button to="/reservations" variant="secondary">
+            <Button to="/bookings" variant="secondary">
               Cancel
             </Button>
           </div>

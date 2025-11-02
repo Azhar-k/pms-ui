@@ -73,11 +73,11 @@ export default function Dashboard() {
       color: "green",
     },
     {
-      title: "Reservations",
+      title: "Bookings",
       value: stats.totalReservations,
       subtitle: `${stats.pendingReservations} pending, ${stats.checkedInReservations} checked in`,
       icon: "📅",
-      link: "/reservations",
+      link: "/bookings",
       color: "purple",
     },
     {
@@ -129,10 +129,10 @@ export default function Dashboard() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div className="space-y-3">
             <Link
-              to="/reservations/new"
+              to="/bookings/new"
               className="block w-full px-4 py-2 text-left text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              ➕ Create New Reservation
+              ➕ Create New Booking
             </Link>
             <Link
               to="/guests/new"

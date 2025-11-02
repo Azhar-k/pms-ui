@@ -7,7 +7,7 @@ export async function loader({ params }: { params: { id: string } }) {
     const reservation = await reservationAPI.getById(Number(params.id));
     return { reservation };
   } catch (error) {
-    throw new Response("Reservation not found", { status: 404 });
+    throw new Response("Booking not found", { status: 404 });
   }
 }
 
@@ -27,14 +27,14 @@ export async function action({ request, params }: { request: Request; params: { 
       // Redirect to the newly created invoice
       return redirect(`/invoices/${invoice.id}`);
     }
-    return redirect(`/reservations/${params.id}`);
+    return redirect(`/bookings/${params.id}`);
   } catch (error) {
-    console.error("Error in reservation action:", error);
+    console.error("Error in booking action:", error);
     return { error: error instanceof Error ? error.message : "Action failed" };
   }
 }
 
-export default function ReservationDetailPage() {
+export default function BookingDetailPage() {
   const { reservation } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
@@ -70,12 +70,12 @@ export default function ReservationDetailPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Reservation {reservation.reservationNumber || `#${reservation.id}`}
+            Booking {reservation.reservationNumber || `#${reservation.id}`}
           </h1>
-          <p className="mt-2 text-gray-600">Reservation details and actions</p>
+          <p className="mt-2 text-gray-600">Booking details and actions</p>
         </div>
-        <Button to="/reservations" variant="secondary">
-          Back to Reservations
+        <Button to="/bookings" variant="secondary">
+          Back to Bookings
         </Button>
       </div>
 
@@ -88,10 +88,10 @@ export default function ReservationDetailPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Reservation Information</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Booking Information</h2>
           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <dt className="text-sm font-medium text-gray-500">Reservation Number</dt>
+              <dt className="text-sm font-medium text-gray-500">Booking Number</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 {reservation.reservationNumber || `#${reservation.id}`}
               </dd>
@@ -187,10 +187,10 @@ export default function ReservationDetailPage() {
           <div className="space-y-3">
             {canEdit && (
               <Link
-                to={`/reservations/${reservation.id}/edit`}
+                to={`/bookings/${reservation.id}/edit`}
                 className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
-                Edit Reservation
+                Edit Booking
               </Link>
             )}
             {canCheckIn && (
@@ -213,7 +213,7 @@ export default function ReservationDetailPage() {
               <Form method="post">
                 <input type="hidden" name="action" value="cancel" />
                 <Button type="submit" variant="danger" className="w-full">
-                  Cancel Reservation
+                  Cancel Booking
                 </Button>
               </Form>
             )}

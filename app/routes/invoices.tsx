@@ -48,7 +48,7 @@ export default function InvoicesPage() {
                 Invoice #
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Reservation
+                Booking
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Issue Date
@@ -86,13 +86,13 @@ export default function InvoicesPage() {
                     <div className="text-sm text-gray-900">
                       {invoice.reservation ? (
                         <Link
-                          to={`/reservations/${invoice.reservationId}`}
+                          to={`/bookings/${invoice.reservationId}`}
                           className="text-blue-600 hover:text-blue-900"
                         >
-                          Reservation #{invoice.reservation.id}
+                          Booking #{invoice.reservation.id}
                         </Link>
                       ) : (
-                        `Reservation #${invoice.reservationId}`
+                        `Booking #${invoice.reservationId}`
                       )}
                     </div>
                   </td>

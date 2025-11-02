@@ -2,10 +2,10 @@ import { Link, useLocation, Outlet } from "react-router";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
+  { name: "Bookings", href: "/bookings", icon: "📅" },
   { name: "Rooms", href: "/rooms", icon: "🏨" },
   { name: "Room Types", href: "/room-types", icon: "🛏️" },
   { name: "Guests", href: "/guests", icon: "👤" },
-  { name: "Reservations", href: "/reservations", icon: "📅" },
   { name: "Invoices", href: "/invoices", icon: "🧾" },
 ];
 

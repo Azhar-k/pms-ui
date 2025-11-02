@@ -103,10 +103,10 @@ export default function RoomDetailPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div className="space-y-3">
             <Link
-              to={`/reservations/new?roomId=${room.id}`}
+              to={`/bookings/new?roomId=${room.id}`}
               className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
-              Create Reservation
+              Create Booking
             </Link>
             <Button to="/rooms" variant="secondary" className="w-full">
               Back to Rooms
