@@ -863,18 +863,148 @@
                     "Room Management"
                 ],
                 "summary": "Get all rooms",
-                "description": "Retrieves a list of all rooms in the system",
+                "description": "Retrieves a list of all rooms in the system with optional pagination, sorting, and filtering",
                 "operationId": "getAllRooms",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number (0-indexed)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "sortBy",
+                        "in": "query",
+                        "description": "Sort by field (e.g., roomNumber, status, floor)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sortDir",
+                        "in": "query",
+                        "description": "Sort direction (asc or desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc"
+                        }
+                    },
+                    {
+                        "name": "roomNumber",
+                        "in": "query",
+                        "description": "Room number filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "roomTypeId",
+                        "in": "query",
+                        "description": "Room type ID filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Status filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "READY",
+                                "MAINTENANCE",
+                                "CLEANING"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "minMaxOccupancy",
+                        "in": "query",
+                        "description": "Minimum max occupancy",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "maxMaxOccupancy",
+                        "in": "query",
+                        "description": "Maximum max occupancy",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "floor",
+                        "in": "query",
+                        "description": "Floor filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "hasBalcony",
+                        "in": "query",
+                        "description": "Has balcony filter",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "hasView",
+                        "in": "query",
+                        "description": "Has view filter",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "searchTerm",
+                        "in": "query",
+                        "description": "Search term for room number, description, amenities",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of rooms retrieved successfully",
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/RoomDTO"
-                                    }
+                                    "type": "object"
                                 }
                             }
                         }
@@ -993,18 +1123,192 @@
                     "Reservation Management"
                 ],
                 "summary": "Get all reservations",
-                "description": "Retrieves a list of all reservations in the system",
+                "description": "Retrieves a list of all reservations in the system with optional pagination, sorting, and filtering",
                 "operationId": "getAllReservations",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number (0-indexed)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "sortBy",
+                        "in": "query",
+                        "description": "Sort by field (e.g., checkInDate, createdAt, status)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sortDir",
+                        "in": "query",
+                        "description": "Sort direction (asc or desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc"
+                        }
+                    },
+                    {
+                        "name": "reservationNumber",
+                        "in": "query",
+                        "description": "Reservation number filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "guestId",
+                        "in": "query",
+                        "description": "Guest ID filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "roomId",
+                        "in": "query",
+                        "description": "Room ID filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "rateTypeId",
+                        "in": "query",
+                        "description": "Rate type ID filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Status filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PENDING",
+                                "CONFIRMED",
+                                "CHECKED_IN",
+                                "CHECKED_OUT",
+                                "CANCELLED",
+                                "NO_SHOW"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "checkInDateFrom",
+                        "in": "query",
+                        "description": "Check-in date from (yyyy-MM-dd)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "checkInDateTo",
+                        "in": "query",
+                        "description": "Check-in date to (yyyy-MM-dd)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "checkOutDateFrom",
+                        "in": "query",
+                        "description": "Check-out date from (yyyy-MM-dd)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "checkOutDateTo",
+                        "in": "query",
+                        "description": "Check-out date to (yyyy-MM-dd)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "minNumberOfGuests",
+                        "in": "query",
+                        "description": "Minimum number of guests",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "maxNumberOfGuests",
+                        "in": "query",
+                        "description": "Maximum number of guests",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "paymentStatus",
+                        "in": "query",
+                        "description": "Payment status filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "searchTerm",
+                        "in": "query",
+                        "description": "Search term for reservation number, special requests",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of reservations retrieved successfully",
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ReservationDTO"
-                                    }
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1530,18 +1834,139 @@
                     "Guest Management"
                 ],
                 "summary": "Get all guests",
-                "description": "Retrieves a list of all guests in the system",
+                "description": "Retrieves a list of all guests in the system with optional pagination, sorting, and filtering",
                 "operationId": "getAllGuests",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number (0-indexed)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "sortBy",
+                        "in": "query",
+                        "description": "Sort by field (e.g., lastName, firstName, email)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sortDir",
+                        "in": "query",
+                        "description": "Sort direction (asc or desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc"
+                        }
+                    },
+                    {
+                        "name": "firstName",
+                        "in": "query",
+                        "description": "First name filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lastName",
+                        "in": "query",
+                        "description": "Last name filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Email filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "phoneNumber",
+                        "in": "query",
+                        "description": "Phone number filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "City filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "description": "State filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "query",
+                        "description": "Country filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "identificationType",
+                        "in": "query",
+                        "description": "Identification type filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "searchTerm",
+                        "in": "query",
+                        "description": "Search term for name, email, phone, address",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of guests retrieved successfully",
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/GuestDTO"
-                                    }
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2017,18 +2442,172 @@
                     "Invoice Management"
                 ],
                 "summary": "Get all invoices",
-                "description": "Retrieves a list of all invoices in the system",
+                "description": "Retrieves a list of all invoices in the system with optional pagination, sorting, and filtering",
                 "operationId": "getAllInvoices",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number (0-indexed)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "sortBy",
+                        "in": "query",
+                        "description": "Sort by field (e.g., issuedDate, totalAmount, status)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sortDir",
+                        "in": "query",
+                        "description": "Sort direction (asc or desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc"
+                        }
+                    },
+                    {
+                        "name": "invoiceNumber",
+                        "in": "query",
+                        "description": "Invoice number filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "reservationId",
+                        "in": "query",
+                        "description": "Reservation ID filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Status filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PENDING",
+                                "PAID",
+                                "PARTIALLY_PAID",
+                                "OVERDUE",
+                                "CANCELLED",
+                                "REFUNDED"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "issuedDateFrom",
+                        "in": "query",
+                        "description": "Issued date from (yyyy-MM-ddTHH:mm:ss)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "issuedDateTo",
+                        "in": "query",
+                        "description": "Issued date to (yyyy-MM-ddTHH:mm:ss)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "paidDateFrom",
+                        "in": "query",
+                        "description": "Paid date from (yyyy-MM-ddTHH:mm:ss)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "paidDateTo",
+                        "in": "query",
+                        "description": "Paid date to (yyyy-MM-ddTHH:mm:ss)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "dueDateFrom",
+                        "in": "query",
+                        "description": "Due date from (yyyy-MM-ddTHH:mm:ss)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "dueDateTo",
+                        "in": "query",
+                        "description": "Due date to (yyyy-MM-ddTHH:mm:ss)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "paymentMethod",
+                        "in": "query",
+                        "description": "Payment method filter",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "searchTerm",
+                        "in": "query",
+                        "description": "Search term for invoice number, notes",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of invoices retrieved successfully",
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/InvoiceDTO"
-                                    }
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2240,6 +2819,70 @@
                             "*/*": {
                                 "schema": {
                                     "$ref": "#/components/schemas/GuestDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/{invoiceId}/items/{itemId}": {
+            "delete": {
+                "tags": [
+                    "Invoice Management"
+                ],
+                "summary": "Remove item from invoice",
+                "description": "Removes an item from an existing invoice",
+                "operationId": "removeInvoiceItem",
+                "parameters": [
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "itemId",
+                        "in": "path",
+                        "description": "Invoice Item ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Item removed successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invoice or invoice item not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cannot remove items from a paid invoice",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoiceDTO"
                                 }
                             }
                         }
