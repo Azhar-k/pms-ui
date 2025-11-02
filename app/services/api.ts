@@ -1,5 +1,16 @@
 const API_BASE_URL = 'http://localhost:8080/api';
 
+function buildQueryString(params: Record<string, any>): string {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      searchParams.append(key, String(value));
+    }
+  });
+  const queryString = searchParams.toString();
+  return queryString ? `?${queryString}` : '';
+}
+
 async function fetchAPI<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -40,9 +51,37 @@ async function fetchAPI<T>(
   }
 }
 
+// Type for paginated response
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
 // Room APIs
 export const roomAPI = {
-  getAll: () => fetchAPI<any[]>('/rooms'),
+  getAll: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+    roomNumber?: string;
+    roomTypeId?: number;
+    status?: string;
+    minMaxOccupancy?: number;
+    maxMaxOccupancy?: number;
+    floor?: number;
+    hasBalcony?: boolean;
+    hasView?: boolean;
+    searchTerm?: string;
+  }) => {
+    const queryString = params ? buildQueryString(params) : '';
+    return fetchAPI<PaginatedResponse<any>>(`/rooms${queryString}`);
+  },
   getById: (id: number) => fetchAPI<any>(`/rooms/${id}`),
   getByNumber: (roomNumber: string) => fetchAPI<any>(`/rooms/number/${roomNumber}`),
   getByType: (roomTypeId: number) => fetchAPI<any[]>(`/rooms/type/${roomTypeId}`),
@@ -84,7 +123,24 @@ export const rateTypeAPI = {
 
 // Guest APIs
 export const guestAPI = {
-  getAll: () => fetchAPI<any[]>('/guests'),
+  getAll: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phoneNumber?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    identificationType?: string;
+    searchTerm?: string;
+  }) => {
+    const queryString = params ? buildQueryString(params) : '';
+    return fetchAPI<PaginatedResponse<any>>(`/guests${queryString}`);
+  },
   getById: (id: number) => fetchAPI<any>(`/guests/${id}`),
   getByEmail: (email: string) => fetchAPI<any>(`/guests/email/${email}`),
   create: (data: any) => fetchAPI<any>('/guests', { method: 'POST', body: JSON.stringify(data) }),
@@ -94,7 +150,28 @@ export const guestAPI = {
 
 // Reservation APIs
 export const reservationAPI = {
-  getAll: () => fetchAPI<any[]>('/reservations'),
+  getAll: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+    reservationNumber?: string;
+    guestId?: number;
+    roomId?: number;
+    rateTypeId?: number;
+    status?: string;
+    checkInDateFrom?: string;
+    checkInDateTo?: string;
+    checkOutDateFrom?: string;
+    checkOutDateTo?: string;
+    minNumberOfGuests?: number;
+    maxNumberOfGuests?: number;
+    paymentStatus?: string;
+    searchTerm?: string;
+  }) => {
+    const queryString = params ? buildQueryString(params) : '';
+    return fetchAPI<PaginatedResponse<any>>(`/reservations${queryString}`);
+  },
   getById: (id: number) => fetchAPI<any>(`/reservations/${id}`),
   getByNumber: (reservationNumber: string) => fetchAPI<any>(`/reservations/number/${reservationNumber}`),
   getByStatus: (status: string) => fetchAPI<any[]>(`/reservations/status/${status}`),
@@ -110,7 +187,26 @@ export const reservationAPI = {
 
 // Invoice APIs
 export const invoiceAPI = {
-  getAll: () => fetchAPI<any[]>('/invoices'),
+  getAll: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+    invoiceNumber?: string;
+    reservationId?: number;
+    status?: string;
+    issuedDateFrom?: string;
+    issuedDateTo?: string;
+    paidDateFrom?: string;
+    paidDateTo?: string;
+    dueDateFrom?: string;
+    dueDateTo?: string;
+    paymentMethod?: string;
+    searchTerm?: string;
+  }) => {
+    const queryString = params ? buildQueryString(params) : '';
+    return fetchAPI<PaginatedResponse<any>>(`/invoices${queryString}`);
+  },
   getById: (id: number) => fetchAPI<any>(`/invoices/${id}`),
   getByNumber: (invoiceNumber: string) => fetchAPI<any>(`/invoices/number/${invoiceNumber}`),
   getByStatus: (status: string) => fetchAPI<any[]>(`/invoices/status/${status}`),

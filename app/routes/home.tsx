@@ -4,12 +4,18 @@ import { Link } from "react-router";
 
 export async function loader() {
   try {
-    const [rooms, guests, reservations, invoices] = await Promise.all([
-      roomAPI.getAll().catch(() => []),
-      guestAPI.getAll().catch(() => []),
-      reservationAPI.getAll().catch(() => []),
-      invoiceAPI.getAll().catch(() => []),
+    const [roomsResponse, guestsResponse, reservationsResponse, invoicesResponse] = await Promise.all([
+      roomAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
+      guestAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
+      reservationAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
+      invoiceAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
     ]);
+
+    // Handle both paginated response and array response for backward compatibility
+    const rooms = Array.isArray(roomsResponse) ? roomsResponse : roomsResponse.content;
+    const guests = Array.isArray(guestsResponse) ? guestsResponse : guestsResponse.content;
+    const reservations = Array.isArray(reservationsResponse) ? reservationsResponse : reservationsResponse.content;
+    const invoices = Array.isArray(invoicesResponse) ? invoicesResponse : invoicesResponse.content;
 
     const readyRooms = rooms.filter((r: any) => r.status === "READY").length;
     const maintenanceRooms = rooms.filter((r: any) => r.status === "MAINTENANCE").length;
