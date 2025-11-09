@@ -99,8 +99,23 @@ function getWeekDays(date: Date): Date[] {
 }
 
 function formatDate(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toISOString().split("T")[0];
+  if (typeof date === "string") {
+    // If it's already in YYYY-MM-DD format, return it as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date;
+    }
+    // Otherwise parse it
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  // For Date objects, use local date components
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function isSameDay(date1: Date | string, date2: Date | string): boolean {
@@ -169,10 +184,43 @@ export default function FrontDeskPage() {
   };
   
   const getReservationsForDate = (date: Date) => {
-    return reservations.filter((res: any) => {
-      const checkIn = new Date(res.checkInDate);
-      const checkOut = new Date(res.checkOutDate);
-      return isDateInRange(date, formatDate(checkIn), formatDate(checkOut));
+    const dateStr = formatDate(date);
+    const filtered = reservations.filter((res: any) => {
+      // Use formatDate to ensure consistent date string format (YYYY-MM-DD)
+      const checkInDate = formatDate(res.checkInDate);
+      const checkOutDate = formatDate(res.checkOutDate);
+      return dateStr >= checkInDate && dateStr <= checkOutDate;
+    });
+    
+    // Sort reservations: pending check-ins first, then checked-in, then check-outs
+    return filtered.sort((a: any, b: any) => {
+      const aCheckIn = isSameDay(date, a.checkInDate);
+      const bCheckIn = isSameDay(date, b.checkInDate);
+      const aCheckOut = isSameDay(date, a.checkOutDate);
+      const bCheckOut = isSameDay(date, b.checkOutDate);
+      
+      // Priority 1: Pending check-ins (PENDING or CONFIRMED on check-in date)
+      const aIsPendingCheckIn = aCheckIn && (a.status === "PENDING" || a.status === "CONFIRMED");
+      const bIsPendingCheckIn = bCheckIn && (b.status === "PENDING" || b.status === "CONFIRMED");
+      
+      if (aIsPendingCheckIn && !bIsPendingCheckIn) return -1;
+      if (!aIsPendingCheckIn && bIsPendingCheckIn) return 1;
+      
+      // Priority 2: Checked-in guests (CHECKED_IN status)
+      const aIsCheckedIn = a.status === "CHECKED_IN";
+      const bIsCheckedIn = b.status === "CHECKED_IN";
+      
+      if (aIsCheckedIn && !bIsCheckedIn && !bIsPendingCheckIn) return -1;
+      if (!aIsCheckedIn && bIsCheckedIn && !aIsPendingCheckIn) return 1;
+      
+      // Priority 3: Check-outs (on check-out date)
+      if (aCheckOut && !bCheckOut && !bIsCheckedIn && !bIsPendingCheckIn) return -1;
+      if (!aCheckOut && bCheckOut && !aIsCheckedIn && !aIsPendingCheckIn) return 1;
+      
+      // Within same priority, sort by room number
+      const aRoom = a.room?.roomNumber || String(a.roomId);
+      const bRoom = b.room?.roomNumber || String(b.roomId);
+      return aRoom.localeCompare(bRoom);
     });
   };
   
@@ -318,7 +366,7 @@ export default function FrontDeskPage() {
                     {day.getDate()}
                   </div>
                   <div className="space-y-1">
-                    {dayReservations.slice(0, 3).map((reservation: any) => {
+                    {dayReservations.slice(0, 5).map((reservation: any) => {
                       const isCheckIn = isSameDay(day, reservation.checkInDate);
                       const isCheckOut = isSameDay(day, reservation.checkOutDate);
                       
@@ -345,7 +393,7 @@ export default function FrontDeskPage() {
                         </Link>
                       );
                     })}
-                    {dayReservations.length > 3 && (
+                    {dayReservations.length > 5 && (
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -354,7 +402,7 @@ export default function FrontDeskPage() {
                         }}
                         className="text-xs text-blue-600 hover:text-blue-800 px-2 font-medium hover:underline cursor-pointer"
                       >
-                        +{dayReservations.length - 3} more
+                        +{dayReservations.length - 5} more
                       </button>
                     )}
                   </div>
@@ -511,11 +559,11 @@ export default function FrontDeskPage() {
       {/* Day Bookings Modal */}
       {selectedDay && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-gray-900 bg-opacity-10 flex items-center justify-center z-50"
           onClick={() => setSelectedDay(null)}
         >
           <div
-            className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col"
+            className="bg-white rounded-lg shadow-2xl border-2 border-gray-300 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
