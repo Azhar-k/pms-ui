@@ -1,4 +1,4 @@
-enhaimport { Link, useLocation, Outlet } from "react-router";
+import { Link, useLocation, Outlet } from "react-router";
 
 const navigation = [
   { name: "Front Desk", href: "/front-desk", icon: "🖥️" },
