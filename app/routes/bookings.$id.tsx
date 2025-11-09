@@ -1,6 +1,7 @@
 import { useLoaderData, Link, Form, redirect, useActionData } from "react-router";
 import { reservationAPI, invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
 
 export async function loader({ params }: { params: { id: string } }) {
   try {
@@ -50,15 +51,6 @@ export default function BookingDetailPage() {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatDateTime = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleString();
-  };
 
   const canCheckIn = reservation.status === "CONFIRMED" || reservation.status === "PENDING";
   const canCheckOut = reservation.status === "CHECKED_IN";
@@ -140,11 +132,11 @@ export default function BookingDetailPage() {
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Check-in Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">{formatDate(reservation.checkInDate)}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{formatDisplayDate(reservation.checkInDate)}</dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Check-out Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">{formatDate(reservation.checkOutDate)}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{formatDisplayDate(reservation.checkOutDate)}</dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Number of Guests</dt>
@@ -160,7 +152,7 @@ export default function BookingDetailPage() {
               <div>
                 <dt className="text-sm font-medium text-gray-500">Actual Check-in Time</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {formatDateTime(reservation.actualCheckInTime)}
+                  {formatDisplayDateTime(reservation.actualCheckInTime)}
                 </dd>
               </div>
             )}
@@ -168,7 +160,7 @@ export default function BookingDetailPage() {
               <div>
                 <dt className="text-sm font-medium text-gray-500">Actual Check-out Time</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {formatDateTime(reservation.actualCheckOutTime)}
+                  {formatDisplayDateTime(reservation.actualCheckOutTime)}
                 </dd>
               </div>
             )}

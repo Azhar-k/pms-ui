@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLoaderData, Link, Form, redirect, useNavigate, useSearchParams, useActionData } from "react-router";
 import { reservationAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { formatDisplayDate } from "../utils/dateFormat";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -292,7 +293,7 @@ export default function FrontDeskPage() {
               </button>
               <h2 className="text-xl font-semibold text-gray-900 min-w-[200px] text-center">
                 {view === "week" 
-                  ? `Week of ${new Date(date).toLocaleDateString()}`
+                  ? `Week of ${formatDisplayDate(date)}`
                   : `${monthNames[month]} ${year}`
                 }
               </h2>
@@ -481,8 +482,8 @@ export default function FrontDeskPage() {
                             {reservation.guest?.firstName} {reservation.guest?.lastName}
                           </div>
                           <div className="text-xs text-gray-600 mb-2">
-                            {new Date(reservation.checkInDate).toLocaleDateString()} -{" "}
-                            {new Date(reservation.checkOutDate).toLocaleDateString()}
+                            {formatDisplayDate(reservation.checkInDate)} -{" "}
+                            {formatDisplayDate(reservation.checkOutDate)}
                           </div>
                           <div className="flex gap-1 flex-wrap">
                             {canCheckIn(reservation) && (
@@ -577,12 +578,7 @@ export default function FrontDeskPage() {
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <h3 className="text-xl font-bold text-gray-900">
-                Bookings for {selectedDay.toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                Bookings for {formatDisplayDate(selectedDay)}
               </h3>
               <button
                 onClick={() => setSelectedDay(null)}
@@ -660,8 +656,8 @@ export default function FrontDeskPage() {
                             </div>
                             <div className="text-sm text-gray-700">
                               <span className="font-medium">Dates:</span>{" "}
-                              {new Date(reservation.checkInDate).toLocaleDateString()} -{" "}
-                              {new Date(reservation.checkOutDate).toLocaleDateString()}
+                              {formatDisplayDate(reservation.checkInDate)} -{" "}
+                              {formatDisplayDate(reservation.checkOutDate)}
                             </div>
                             <div className="text-sm text-gray-700">
                               <span className="font-medium">Guests:</span> {reservation.numberOfGuests}

@@ -1,6 +1,7 @@
 import { Form, useLoaderData, redirect, useActionData } from "react-router";
 import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { DateInput } from "../components/DateInput";
 import { useState, useEffect } from "react";
 
 export async function loader({ params }: { params: { id: string } }) {
@@ -161,34 +162,22 @@ export default function EditReservationPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700">
-                Check-in Date *
-              </label>
-              <input
-                type="date"
-                id="checkInDate"
-                name="checkInDate"
-                value={checkInDate}
-                onChange={(e) => setCheckInDate(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
-              />
-            </div>
-            <div>
-              <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700">
-                Check-out Date *
-              </label>
-              <input
-                type="date"
-                id="checkOutDate"
-                name="checkOutDate"
-                value={checkOutDate}
-                onChange={(e) => setCheckOutDate(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white"
-              />
-            </div>
+            <DateInput
+              label="Check-in Date *"
+              id="checkInDate"
+              name="checkInDate"
+              value={checkInDate}
+              onChange={(e) => setCheckInDate(e.target.value)}
+              required
+            />
+            <DateInput
+              label="Check-out Date *"
+              id="checkOutDate"
+              name="checkOutDate"
+              value={checkOutDate}
+              onChange={(e) => setCheckOutDate(e.target.value)}
+              required
+            />
           </div>
 
           <div>

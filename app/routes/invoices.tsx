@@ -2,6 +2,7 @@ import { useLoaderData, Link, useNavigate, useSearchParams, Form } from "react-r
 import { invoiceAPI, type PaginatedResponse } from "../services/api";
 import { Button } from "../components/Button";
 import { Pagination } from "../components/Pagination";
+import { formatDisplayDate } from "../utils/dateFormat";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -70,10 +71,6 @@ export default function InvoicesPage() {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
-  };
 
   const handleSort = (sortBy: string) => {
     const params = new URLSearchParams(searchParams);
@@ -291,10 +288,10 @@ export default function InvoicesPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatDate(invoice.issuedDate)}
+                    {formatDisplayDate(invoice.issuedDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatDate(invoice.dueDate)}
+                    {formatDisplayDate(invoice.dueDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span

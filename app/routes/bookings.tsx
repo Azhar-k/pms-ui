@@ -2,6 +2,8 @@ import { useLoaderData, Link, useNavigate, useSearchParams, Form } from "react-r
 import { reservationAPI, type PaginatedResponse } from "../services/api";
 import { Button } from "../components/Button";
 import { Pagination } from "../components/Pagination";
+import { DateInput } from "../components/DateInput";
+import { formatDisplayDate } from "../utils/dateFormat";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -72,10 +74,6 @@ export default function BookingsPage() {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
-  };
 
   const handleSort = (sortBy: string) => {
     const params = new URLSearchParams(searchParams);
@@ -138,42 +136,30 @@ export default function BookingsPage() {
               <option value="NO_SHOW">No Show</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Check-in From</label>
-            <input
-              type="date"
-              name="checkInDateFrom"
-              defaultValue={searchParams.get("checkInDateFrom") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Check-in To</label>
-            <input
-              type="date"
-              name="checkInDateTo"
-              defaultValue={searchParams.get("checkInDateTo") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Check-out From</label>
-            <input
-              type="date"
-              name="checkOutDateFrom"
-              defaultValue={searchParams.get("checkOutDateFrom") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Check-out To</label>
-            <input
-              type="date"
-              name="checkOutDateTo"
-              defaultValue={searchParams.get("checkOutDateTo") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <DateInput
+            label="Check-in From"
+            id="checkInDateFrom"
+            name="checkInDateFrom"
+            defaultValue={searchParams.get("checkInDateFrom") || ""}
+          />
+          <DateInput
+            label="Check-in To"
+            id="checkInDateTo"
+            name="checkInDateTo"
+            defaultValue={searchParams.get("checkInDateTo") || ""}
+          />
+          <DateInput
+            label="Check-out From"
+            id="checkOutDateFrom"
+            name="checkOutDateFrom"
+            defaultValue={searchParams.get("checkOutDateFrom") || ""}
+          />
+          <DateInput
+            label="Check-out To"
+            id="checkOutDateTo"
+            name="checkOutDateTo"
+            defaultValue={searchParams.get("checkOutDateTo") || ""}
+          />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
             <input
@@ -289,8 +275,8 @@ export default function BookingsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{formatDate(reservation.checkInDate)}</div>
-                    <div className="text-sm text-gray-500">to {formatDate(reservation.checkOutDate)}</div>
+                    <div className="text-sm text-gray-900">{formatDisplayDate(reservation.checkInDate)}</div>
+                    <div className="text-sm text-gray-500">to {formatDisplayDate(reservation.checkOutDate)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span

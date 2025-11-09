@@ -1,6 +1,7 @@
 import { useLoaderData, Link, Form, redirect, useActionData } from "react-router";
 import { invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
 
 export async function loader({ params }: { params: { id: string } }) {
   try {
@@ -93,15 +94,6 @@ export default function InvoiceDetailPage() {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatDateTime = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleString();
-  };
 
   const canAddItem = invoice.status === "PENDING";
   const canRemoveItem = invoice.status === "PENDING";
@@ -165,16 +157,16 @@ export default function InvoiceDetailPage() {
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Issue Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">{formatDateTime(invoice.issuedDate)}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{formatDisplayDateTime(invoice.issuedDate)}</dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Due Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">{formatDate(invoice.dueDate)}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{formatDisplayDate(invoice.dueDate)}</dd>
             </div>
             {invoice.paidDate && (
               <div>
                 <dt className="text-sm font-medium text-gray-500">Paid Date</dt>
-                <dd className="mt-1 text-sm text-gray-900">{formatDateTime(invoice.paidDate)}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{formatDisplayDateTime(invoice.paidDate)}</dd>
               </div>
             )}
             {invoice.paymentMethod && (
