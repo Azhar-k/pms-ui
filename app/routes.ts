@@ -23,6 +23,7 @@ export default [
     route("bookings/new", "routes/bookings.new.tsx"),
     route("bookings/:id/edit", "routes/bookings.$id.edit.tsx"),
     route("bookings/:id", "routes/bookings.$id.tsx"),
+    route("front-desk", "routes/front-desk.tsx"),
     route("invoices", "routes/invoices.tsx"),
     route("invoices/:id", "routes/invoices.$id.tsx"),
   ]),

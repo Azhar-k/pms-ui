@@ -2,6 +2,7 @@ import { Link, useLocation, Outlet } from "react-router";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
+  { name: "Front Desk", href: "/front-desk", icon: "🖥️" },
   { name: "Bookings", href: "/bookings", icon: "📅" },
   { name: "Rooms", href: "/rooms", icon: "🏨" },
   { name: "Room Types", href: "/room-types", icon: "🛏️" },
@@ -27,7 +28,8 @@ export default function Layout() {
             {navigation.map((item) => {
               // Highlight both /room-types and /rate-types as active since they show the same combined page
               const isActive = location.pathname === item.href || 
-                (item.href === "/room-types" && location.pathname.startsWith("/rate-types"));
+                (item.href === "/room-types" && location.pathname.startsWith("/rate-types")) ||
+                (item.href === "/front-desk" && location.pathname.startsWith("/front-desk"));
               return (
                 <Link
                   key={item.name}
