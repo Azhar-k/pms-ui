@@ -236,12 +236,24 @@ export default function FrontDeskPage() {
   
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Front Desk</h1>
           <p className="mt-2 text-gray-600">Calendar view of bookings and reservations</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-4 items-start">
+          {/* Status Legend */}
+          <div className="bg-white rounded-lg shadow p-3">
+            <h3 className="text-xs font-medium text-gray-700 mb-2">Status</h3>
+            <div className="flex flex-wrap gap-2">
+              {["PENDING", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT", "CANCELLED", "NO_SHOW"].map((status) => (
+                <div key={status} className="flex items-center gap-1.5">
+                  <div className={`w-3 h-3 rounded border ${getStatusColor(status)}`}></div>
+                  <span className="text-xs text-gray-600">{status.replace("_", " ")}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           <Button to="/bookings/new" variant="primary">
             New Booking
           </Button>
@@ -308,19 +320,6 @@ export default function FrontDeskPage() {
               Month
             </button>
           </div>
-        </div>
-      </div>
-      
-      {/* Status Legend */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Status Legend</h3>
-        <div className="flex flex-wrap gap-3">
-          {["PENDING", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT", "CANCELLED", "NO_SHOW"].map((status) => (
-            <div key={status} className="flex items-center gap-2">
-              <div className={`w-4 h-4 rounded border ${getStatusColor(status)}`}></div>
-              <span className="text-sm text-gray-600">{status.replace("_", " ")}</span>
-            </div>
-          ))}
         </div>
       </div>
       
