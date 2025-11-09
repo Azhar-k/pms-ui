@@ -5,10 +5,14 @@ import { useState, useEffect } from "react";
 
 export async function loader() {
   try {
-    const [guests, rateTypes] = await Promise.all([
+    const [guestsResponse, rateTypes] = await Promise.all([
       guestAPI.getAll(),
       rateTypeAPI.getAll(),
     ]);
+    // Handle paginated response
+    const guests = Array.isArray(guestsResponse) 
+      ? guestsResponse 
+      : guestsResponse.content || [];
     return { guests, rateTypes };
   } catch (error) {
     console.error("Error loading booking form data:", error);

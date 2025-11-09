@@ -5,11 +5,15 @@ import { useState, useEffect } from "react";
 
 export async function loader({ params }: { params: { id: string } }) {
   try {
-    const [reservation, guests, rateTypes] = await Promise.all([
+    const [reservation, guestsResponse, rateTypes] = await Promise.all([
       reservationAPI.getById(Number(params.id)),
       guestAPI.getAll(),
       rateTypeAPI.getAll(),
     ]);
+    // Handle paginated response
+    const guests = Array.isArray(guestsResponse) 
+      ? guestsResponse 
+      : guestsResponse.content || [];
     return { reservation, guests, rateTypes };
   } catch (error) {
     throw new Response("Booking not found", { status: 404 });
