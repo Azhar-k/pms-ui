@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLoaderData, Link, Form, redirect, useNavigate, useSearchParams, useActionData } from "react-router";
 import { reservationAPI } from "../services/api";
 import { Button } from "../components/Button";
@@ -128,6 +129,7 @@ export default function FrontDeskPage() {
   const actionData = useActionData<typeof action>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   
   const date = new Date(currentDate);
   const year = date.getFullYear();
@@ -299,7 +301,14 @@ export default function FrontDeskPage() {
                   key={index}
                   className={`min-h-32 p-2 border-b border-r border-gray-200 ${
                     !isCurrentMonth ? "bg-gray-50" : "bg-white"
-                  } ${isToday ? "ring-2 ring-blue-500" : ""}`}
+                  } ${isToday ? "ring-2 ring-blue-500" : ""} ${
+                    dayReservations.length > 0 ? "cursor-pointer hover:bg-gray-50" : ""
+                  }`}
+                  onClick={() => {
+                    if (dayReservations.length > 0) {
+                      setSelectedDay(day);
+                    }
+                  }}
                 >
                   <div
                     className={`text-sm font-medium mb-1 ${
@@ -321,6 +330,7 @@ export default function FrontDeskPage() {
                             reservation.status
                           )} hover:opacity-80 truncate`}
                           title={`${reservation.guest?.firstName || ""} ${reservation.guest?.lastName || ""} - Room ${reservation.room?.roomNumber || reservation.roomId}`}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center gap-1">
                             {isCheckIn && <span className="font-bold">→</span>}
@@ -336,9 +346,16 @@ export default function FrontDeskPage() {
                       );
                     })}
                     {dayReservations.length > 3 && (
-                      <div className="text-xs text-gray-500 px-2">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedDay(day);
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-800 px-2 font-medium hover:underline cursor-pointer"
+                      >
                         +{dayReservations.length - 3} more
-                      </div>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -490,6 +507,168 @@ export default function FrontDeskPage() {
           </div>
         </div>
       </div>
+      
+      {/* Day Bookings Modal */}
+      {selectedDay && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setSelectedDay(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-gray-900">
+                Bookings for {selectedDay.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </h3>
+              <button
+                onClick={() => setSelectedDay(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="px-6 py-4 overflow-y-auto flex-1">
+              {(() => {
+                const dayReservations = getReservationsForDate(selectedDay);
+                
+                if (dayReservations.length === 0) {
+                  return (
+                    <div className="text-center py-8 text-gray-500">
+                      No bookings for this day
+                    </div>
+                  );
+                }
+                
+                return (
+                  <div className="space-y-3">
+                    {dayReservations.map((reservation: any) => {
+                      const isCheckIn = isSameDay(selectedDay, reservation.checkInDate);
+                      const isCheckOut = isSameDay(selectedDay, reservation.checkOutDate);
+                      
+                      return (
+                        <div
+                          key={reservation.id}
+                          className={`p-4 rounded-lg border ${getStatusColor(
+                            reservation.status
+                          )}`}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <Link
+                                to={`/bookings/${reservation.id}`}
+                                className="font-semibold text-lg hover:underline text-gray-900"
+                              >
+                                {reservation.room?.roomNumber || `Room ${reservation.roomId}`}
+                              </Link>
+                              <div className="flex items-center gap-2 mt-1">
+                                {isCheckIn && (
+                                  <span className="text-xs font-bold px-2 py-1 bg-green-200 text-green-800 rounded" title="Check-in">
+                                    → Check-in
+                                  </span>
+                                )}
+                                {isCheckOut && (
+                                  <span className="text-xs font-bold px-2 py-1 bg-blue-200 text-blue-800 rounded" title="Check-out">
+                                    ← Check-out
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span
+                              className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                                reservation.status
+                              )}`}
+                            >
+                              {reservation.status.replace("_", " ")}
+                            </span>
+                          </div>
+                          
+                          <div className="space-y-1 mb-3">
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium">Guest:</span>{" "}
+                              {reservation.guest?.firstName} {reservation.guest?.lastName}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium">Reservation #:</span>{" "}
+                              {reservation.reservationNumber || `#${reservation.id}`}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium">Dates:</span>{" "}
+                              {new Date(reservation.checkInDate).toLocaleDateString()} -{" "}
+                              {new Date(reservation.checkOutDate).toLocaleDateString()}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium">Guests:</span> {reservation.numberOfGuests}
+                            </div>
+                            {reservation.totalAmount && (
+                              <div className="text-sm text-gray-700">
+                                <span className="font-medium">Total:</span> ₹{reservation.totalAmount.toFixed(2)}
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex gap-2 flex-wrap">
+                            <Link
+                              to={`/bookings/${reservation.id}`}
+                              className="text-sm px-3 py-1.5 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                            >
+                              View Details
+                            </Link>
+                            {canCheckIn(reservation) && (
+                              <Form method="post" className="inline">
+                                <input type="hidden" name="action" value="checkIn" />
+                                <input type="hidden" name="reservationId" value={reservation.id} />
+                                <input
+                                  type="hidden"
+                                  name="redirectTo"
+                                  value={`/front-desk?view=${view}&date=${currentDate}`}
+                                />
+                                <button
+                                  type="submit"
+                                  className="text-sm px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700"
+                                >
+                                  Check In
+                                </button>
+                              </Form>
+                            )}
+                            {canCheckOut(reservation) && (
+                              <Form method="post" className="inline">
+                                <input type="hidden" name="action" value="checkOut" />
+                                <input type="hidden" name="reservationId" value={reservation.id} />
+                                <input
+                                  type="hidden"
+                                  name="redirectTo"
+                                  value={`/front-desk?view=${view}&date=${currentDate}`}
+                                />
+                                <button
+                                  type="submit"
+                                  className="text-sm px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                >
+                                  Check Out
+                                </button>
+                              </Form>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
