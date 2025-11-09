@@ -168,19 +168,29 @@ export default function FrontDeskPage() {
     }
     
     params.set("date", formatDate(current));
-    navigate(`?${params.toString()}`);
+    // Preserve view parameter
+    if (view) {
+      params.set("view", view);
+    }
+    navigate(`/front-desk?${params.toString()}`);
   };
   
   const changeView = (newView: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("view", newView);
-    navigate(`?${params.toString()}`);
+    // Preserve the date when changing views
+    params.set("date", currentDate);
+    navigate(`/front-desk?${params.toString()}`);
   };
   
   const goToToday = () => {
     const params = new URLSearchParams(searchParams);
     params.set("date", formatDate(new Date()));
-    navigate(`?${params.toString()}`);
+    // Preserve view parameter
+    if (view) {
+      params.set("view", view);
+    }
+    navigate(`/front-desk?${params.toString()}`);
   };
   
   const getReservationsForDate = (date: Date) => {
@@ -267,71 +277,70 @@ export default function FrontDeskPage() {
         </div>
       )}
       
-      {/* Calendar Controls */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigateDate("prev")}
-              className="p-2 rounded-lg hover:bg-gray-100"
-              aria-label="Previous"
-            >
-              ←
-            </button>
-            <h2 className="text-xl font-semibold text-gray-900">
-              {view === "week" 
-                ? `Week of ${new Date(date).toLocaleDateString()}`
-                : `${monthNames[month]} ${year}`
-              }
-            </h2>
-            <button
-              onClick={() => navigateDate("next")}
-              className="p-2 rounded-lg hover:bg-gray-100"
-              aria-label="Next"
-            >
-              →
-            </button>
-            <button
-              onClick={goToToday}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-            >
-              Today
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => changeView("week")}
-              className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                view === "week"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Week
-            </button>
-            <button
-              onClick={() => changeView("month")}
-              className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                view === "month"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Month
-            </button>
-          </div>
-        </div>
-      </div>
-      
       {/* Calendar View */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
+        {/* Calendar Header with Navigation */}
+        <div className="border-b border-gray-200 p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigateDate("prev")}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                aria-label="Previous"
+              >
+                ←
+              </button>
+              <h2 className="text-xl font-semibold text-gray-900 min-w-[200px] text-center">
+                {view === "week" 
+                  ? `Week of ${new Date(date).toLocaleDateString()}`
+                  : `${monthNames[month]} ${year}`
+                }
+              </h2>
+              <button
+                onClick={() => navigateDate("next")}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                aria-label="Next"
+              >
+                →
+              </button>
+              <button
+                onClick={goToToday}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+              >
+                Today
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => changeView("week")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  view === "week"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Week
+              </button>
+              <button
+                onClick={() => changeView("month")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  view === "month"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Month
+              </button>
+            </div>
+          </div>
+        </div>
         {view === "month" ? (
           <div className="grid grid-cols-7">
             {/* Day Headers */}
             {dayNames.map((day) => (
               <div
                 key={day}
-                className="p-3 text-center text-sm font-semibold text-gray-700 bg-gray-50 border-b border-r border-gray-200"
+                className="p-2 text-center text-xs font-semibold text-gray-700 bg-gray-50 border-b border-r border-gray-200"
               >
                 {day}
               </div>
@@ -346,9 +355,9 @@ export default function FrontDeskPage() {
               return (
                 <div
                   key={index}
-                  className={`min-h-32 p-2 border-b border-r border-gray-200 ${
+                  className={`min-h-20 p-1.5 border-b border-r border-gray-200 ${
                     !isCurrentMonth ? "bg-gray-50" : "bg-white"
-                  } ${isToday ? "ring-2 ring-blue-500" : ""} ${
+                  } ${isToday ? "ring-1 ring-blue-500" : ""} ${
                     dayReservations.length > 0 ? "cursor-pointer hover:bg-gray-50" : ""
                   }`}
                   onClick={() => {
@@ -358,13 +367,13 @@ export default function FrontDeskPage() {
                   }}
                 >
                   <div
-                    className={`text-sm font-medium mb-1 ${
+                    className={`text-xs font-medium mb-0.5 ${
                       isCurrentMonth ? "text-gray-900" : "text-gray-400"
                     } ${isToday ? "text-blue-600" : ""}`}
                   >
                     {day.getDate()}
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {dayReservations.slice(0, 5).map((reservation: any) => {
                       const isCheckIn = isSameDay(day, reservation.checkInDate);
                       const isCheckOut = isSameDay(day, reservation.checkOutDate);
@@ -373,20 +382,20 @@ export default function FrontDeskPage() {
                         <Link
                           key={reservation.id}
                           to={`/bookings/${reservation.id}`}
-                          className={`block px-2 py-1 text-xs rounded border ${getStatusColor(
+                          className={`block px-1.5 py-0.5 text-xs rounded border ${getStatusColor(
                             reservation.status
-                          )} hover:opacity-80 truncate`}
+                          )} hover:opacity-80 truncate leading-tight`}
                           title={`${reservation.guest?.firstName || ""} ${reservation.guest?.lastName || ""} - Room ${reservation.room?.roomNumber || reservation.roomId}`}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="flex items-center gap-1">
-                            {isCheckIn && <span className="font-bold">→</span>}
-                            {isCheckOut && <span className="font-bold">←</span>}
-                            <span className="truncate">
+                          <div className="flex items-center gap-0.5">
+                            {isCheckIn && <span className="font-bold text-[10px]">→</span>}
+                            {isCheckOut && <span className="font-bold text-[10px]">←</span>}
+                            <span className="truncate text-[11px]">
                               {reservation.room?.roomNumber || `R${reservation.roomId}`}
                             </span>
                           </div>
-                          <div className="truncate text-xs">
+                          <div className="truncate text-[10px] leading-tight">
                             {reservation.guest?.firstName || "Guest"}
                           </div>
                         </Link>
@@ -399,7 +408,7 @@ export default function FrontDeskPage() {
                           e.stopPropagation();
                           setSelectedDay(day);
                         }}
-                        className="text-xs text-blue-600 hover:text-blue-800 px-2 font-medium hover:underline cursor-pointer"
+                        className="text-[10px] text-blue-600 hover:text-blue-800 px-1 font-medium hover:underline cursor-pointer"
                       >
                         +{dayReservations.length - 5} more
                       </button>
