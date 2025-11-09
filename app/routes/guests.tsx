@@ -98,7 +98,7 @@ export default function GuestsPage() {
               name="searchTerm"
               defaultValue={searchParams.get("searchTerm") || ""}
               placeholder="Name, email, phone, address..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -108,7 +108,7 @@ export default function GuestsPage() {
               name="email"
               defaultValue={searchParams.get("email") || ""}
               placeholder="Filter by email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -118,7 +118,7 @@ export default function GuestsPage() {
               name="city"
               defaultValue={searchParams.get("city") || ""}
               placeholder="Filter by city"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -126,7 +126,7 @@ export default function GuestsPage() {
             <select
               name="size"
               defaultValue={searchParams.get("size") || "10"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="5">5</option>
               <option value="10">10</option>

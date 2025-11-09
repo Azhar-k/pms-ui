@@ -119,7 +119,7 @@ export default function BookingsPage() {
               name="searchTerm"
               defaultValue={searchParams.get("searchTerm") || ""}
               placeholder="Reservation number, special requests..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -127,7 +127,7 @@ export default function BookingsPage() {
             <select
               name="status"
               defaultValue={searchParams.get("status") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Statuses</option>
               <option value="PENDING">Pending</option>
@@ -144,7 +144,7 @@ export default function BookingsPage() {
               type="date"
               name="checkInDateFrom"
               defaultValue={searchParams.get("checkInDateFrom") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -153,7 +153,7 @@ export default function BookingsPage() {
               type="date"
               name="checkInDateTo"
               defaultValue={searchParams.get("checkInDateTo") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -162,7 +162,7 @@ export default function BookingsPage() {
               type="date"
               name="checkOutDateFrom"
               defaultValue={searchParams.get("checkOutDateFrom") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -171,7 +171,7 @@ export default function BookingsPage() {
               type="date"
               name="checkOutDateTo"
               defaultValue={searchParams.get("checkOutDateTo") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -181,7 +181,7 @@ export default function BookingsPage() {
               name="paymentStatus"
               defaultValue={searchParams.get("paymentStatus") || ""}
               placeholder="Filter by payment status"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -189,7 +189,7 @@ export default function BookingsPage() {
             <select
               name="size"
               defaultValue={searchParams.get("size") || "10"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="5">5</option>
               <option value="10">10</option>

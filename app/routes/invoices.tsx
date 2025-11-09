@@ -116,7 +116,7 @@ export default function InvoicesPage() {
               name="searchTerm"
               defaultValue={searchParams.get("searchTerm") || ""}
               placeholder="Invoice number, notes..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -124,7 +124,7 @@ export default function InvoicesPage() {
             <select
               name="status"
               defaultValue={searchParams.get("status") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Statuses</option>
               <option value="PENDING">Pending</option>
@@ -141,7 +141,7 @@ export default function InvoicesPage() {
               type="datetime-local"
               name="issuedDateFrom"
               defaultValue={searchParams.get("issuedDateFrom") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -150,7 +150,7 @@ export default function InvoicesPage() {
               type="datetime-local"
               name="issuedDateTo"
               defaultValue={searchParams.get("issuedDateTo") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -159,7 +159,7 @@ export default function InvoicesPage() {
               type="datetime-local"
               name="dueDateFrom"
               defaultValue={searchParams.get("dueDateFrom") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -168,7 +168,7 @@ export default function InvoicesPage() {
               type="datetime-local"
               name="dueDateTo"
               defaultValue={searchParams.get("dueDateTo") || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -178,7 +178,7 @@ export default function InvoicesPage() {
               name="paymentMethod"
               defaultValue={searchParams.get("paymentMethod") || ""}
               placeholder="Filter by payment method"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -186,7 +186,7 @@ export default function InvoicesPage() {
             <select
               name="size"
               defaultValue={searchParams.get("size") || "10"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="5">5</option>
               <option value="10">10</option>
