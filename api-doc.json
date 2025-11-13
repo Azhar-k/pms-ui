@@ -19,10 +19,19 @@
             "description": "Generated server url"
         }
     ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
     "tags": [
         {
             "name": "Rate Type Management",
             "description": "APIs for managing rate types and room type rates"
+        },
+        {
+            "name": "Health",
+            "description": "Health check endpoint"
         },
         {
             "name": "Invoice Management",
@@ -2014,6 +2023,29 @@
                 }
             }
         },
+        "/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health check",
+                "description": "Returns the health status of the application",
+                "operationId": "health",
+                "responses": {
+                    "200": {
+                        "description": "Application is healthy",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/rooms/type/{roomTypeId}": {
             "get": {
                 "tags": [
@@ -3272,6 +3304,14 @@
                         "type": "string"
                     }
                 }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "Authorization",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
             }
         }
     }
