@@ -1,3 +1,5 @@
+import { tokenStorage } from './auth';
+
 const API_BASE_URL = 'http://localhost:8080/api';
 
 function buildQueryString(params: Record<string, any>): string {
@@ -17,13 +19,24 @@ async function fetchAPI<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   
+  // Get access token
+  const token = tokenStorage.getAccessToken();
+  
+  // Build headers
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+  
+  // Add authorization header if token exists
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   try {
     const response = await fetch(url, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
     });
 
     // Handle 204 No Content
@@ -32,6 +45,13 @@ async function fetchAPI<T>(
     }
 
     if (!response.ok) {
+      // Handle 401 Unauthorized - token expired or invalid
+      if (response.status === 401) {
+        tokenStorage.clear();
+        // Redirect to login will be handled by route protection
+        throw new Error('UNAUTHORIZED');
+      }
+      
       const errorText = await response.text().catch(() => response.statusText);
       throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
     }

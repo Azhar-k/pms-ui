@@ -63,6 +63,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
+    
+    // Handle UNAUTHORIZED errors
+    if (error.message === 'UNAUTHORIZED') {
+      // This will be handled by the route protection, but we can show a message
+      message = "Unauthorized";
+      details = "Your session has expired. Please login again.";
+    }
   }
 
   return (

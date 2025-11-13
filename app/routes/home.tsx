@@ -1,8 +1,11 @@
 import { useLoaderData } from "react-router";
 import { roomAPI, guestAPI, reservationAPI, invoiceAPI } from "../services/api";
 import { Link } from "react-router";
+import { requireAuth } from "../utils/auth";
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
+  // Ensure user is authenticated (double check, though ProtectedLayout should handle this)
+  requireAuth(request);
   try {
     const [roomsResponse, guestsResponse, reservationsResponse, invoicesResponse] = await Promise.all([
       roomAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),

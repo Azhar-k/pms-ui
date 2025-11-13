@@ -1,4 +1,7 @@
-import { Link, useLocation, Outlet } from "react-router";
+import { Link, useLocation, Outlet, Form } from "react-router";
+import { tokenStorage } from "../services/auth";
+import { useEffect, useState } from "react";
+import type { UserResponse } from "../services/auth";
 
 const navigation = [
   { name: "Front Desk", href: "/front-desk", icon: "🖥️" },
@@ -12,6 +15,13 @@ const navigation = [
 
 export default function Layout() {
   const location = useLocation();
+  const [user, setUser] = useState<UserResponse | null>(null);
+
+  useEffect(() => {
+    // Load user info from storage
+    const userData = tokenStorage.getUser();
+    setUser(userData);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,6 +56,37 @@ export default function Layout() {
               );
             })}
           </nav>
+
+          {/* User Info and Logout */}
+          <div className="border-t border-gray-200 p-4">
+            {user && (
+              <div className="mb-3">
+                <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                <div className="text-xs text-gray-500">{user.email}</div>
+                {user.roles && user.roles.length > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {user.roles.map((role) => (
+                      <span
+                        key={role}
+                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                      >
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            <Form method="post" action="/logout">
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <span className="mr-2">🚪</span>
+                Logout
+              </button>
+            </Form>
+          </div>
         </div>
       </div>
 
