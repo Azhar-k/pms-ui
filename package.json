@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "test:guests": "vitest app/routes/__tests__/guests.test.tsx"
+    "test:guests": "vitest app/routes/__tests__/guests.test.tsx",
+    "test:bookings": "vitest app/routes/__tests__/bookings.test.tsx"
   },
   "dependencies": {
     "@react-router/node": "^7.9.2",
