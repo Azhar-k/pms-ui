@@ -32,7 +32,7 @@ export async function loader({ request }: { request: Request }) {
   }
 
   try {
-    const reservations = await reservationAPI.getByDateRange(startDate, endDate);
+    const reservations = await reservationAPI.getByDateRange(startDate, endDate, request);
     return { reservations, currentDate: dateParam, view };
   } catch (error) {
     console.error("Error loading reservations:", error);

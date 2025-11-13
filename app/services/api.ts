@@ -15,12 +15,13 @@ function buildQueryString(params: Record<string, any>): string {
 
 async function fetchAPI<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  request?: Request
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   
-  // Get access token
-  const token = tokenStorage.getAccessToken();
+  // Get access token (from cookies if request is provided, otherwise from cookies on client)
+  const token = tokenStorage.getAccessToken(request);
   
   // Build headers
   const headers: HeadersInit = {
@@ -196,8 +197,8 @@ export const reservationAPI = {
   getByNumber: (reservationNumber: string) => fetchAPI<any>(`/reservations/number/${reservationNumber}`),
   getByStatus: (status: string) => fetchAPI<any[]>(`/reservations/status/${status}`),
   getByGuest: (guestId: number) => fetchAPI<any[]>(`/reservations/guest/${guestId}`),
-  getByDateRange: (startDate: string, endDate: string) =>
-    fetchAPI<any[]>(`/reservations/date-range?startDate=${startDate}&endDate=${endDate}`),
+  getByDateRange: (startDate: string, endDate: string, request?: Request) =>
+    fetchAPI<any[]>(`/reservations/date-range?startDate=${startDate}&endDate=${endDate}`, {}, request),
   create: (data: any) => fetchAPI<any>('/reservations', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: any) => fetchAPI<any>(`/reservations/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   checkIn: (id: number) => fetchAPI<any>(`/reservations/${id}/check-in`, { method: 'POST' }),

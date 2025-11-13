@@ -9,23 +9,62 @@ export async function loader() {
 }
 
 export async function action({ request }: { request: Request }) {
+  console.log('[LOGIN ACTION] Action called');
+  console.log('[LOGIN ACTION] Request URL:', request.url);
+  console.log('[LOGIN ACTION] Request method:', request.method);
+  
   const formData = await request.formData();
   const usernameOrEmail = formData.get("usernameOrEmail") as string;
   const password = formData.get("password") as string;
   const redirectTo = new URL(request.url).searchParams.get("redirect") || "/";
 
+  console.log('[LOGIN ACTION] Form data:', {
+    hasUsernameOrEmail: !!usernameOrEmail,
+    hasPassword: !!password,
+    redirectTo,
+  });
+
   if (!usernameOrEmail || !password) {
+    console.warn('[LOGIN ACTION] Missing credentials');
     return {
       error: "Username/Email and password are required",
     };
   }
 
   try {
-    await authAPI.login(usernameOrEmail, password);
-    return redirect(redirectTo);
+    console.log('[LOGIN ACTION] Calling authAPI.login...');
+    const authResult = await authAPI.login(usernameOrEmail, password);
+    console.log('[LOGIN ACTION] Login successful, redirecting to:', redirectTo);
+    console.log('[LOGIN ACTION] Auth result:', {
+      hasAccessToken: !!authResult.accessToken,
+      hasRefreshToken: !!authResult.refreshToken,
+    });
+    
+    // Set cookies in response headers for server-side access
+    // Cookies will be available on both server and client
+    const redirectUrl = new URL(redirectTo, request.url).toString();
+    const response = Response.redirect(redirectUrl, 302);
+    
+    // Create new headers with cookies
+    const headers = new Headers(response.headers);
+    headers.append('Set-Cookie', `auth_access_token=${encodeURIComponent(authResult.accessToken)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`);
+    headers.append('Set-Cookie', `auth_refresh_token=${encodeURIComponent(authResult.refreshToken)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800`);
+    
+    // Create response with cookies
+    const responseWithCookies = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: headers,
+    });
+    
+    console.log('[LOGIN ACTION] Redirect response with cookies created');
+    return responseWithCookies;
   } catch (error) {
+    console.error('[LOGIN ACTION] Login error caught:', error);
+    const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
+    console.error('[LOGIN ACTION] Returning error to UI:', errorMessage);
     return {
-      error: error instanceof Error ? error.message : "Login failed. Please try again.",
+      error: errorMessage,
     };
   }
 }
