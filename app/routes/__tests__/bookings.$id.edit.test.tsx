@@ -84,6 +84,8 @@ describe("EditBookingPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(roomAPI.getAvailable).mockResolvedValue(mockRooms);
+    // Mock getAvailableForDateRange since the component calls it in useEffect
+    vi.mocked(roomAPI.getAvailableForDateRange).mockResolvedValue(mockRooms);
   });
 
   const createRouter = (initialEntries = ["/bookings/1/edit"]) => {

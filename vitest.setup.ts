@@ -1,4 +1,4 @@
-import { expect, afterEach } from "vitest";
+import { expect, afterEach, beforeEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 
@@ -20,6 +20,25 @@ if (typeof globalThis.Request !== "undefined") {
     }
   } as typeof Request;
 }
+
+// Suppress React Router HydrateFallback warnings in tests
+// This is expected when using createMemoryRouter in test environment
+const originalError = console.error;
+beforeEach(() => {
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("HydrateFallback")
+    ) {
+      return; // Suppress HydrateFallback warnings
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterEach(() => {
+  console.error = originalError;
+});
 
 // Cleanup after each test
 afterEach(() => {
