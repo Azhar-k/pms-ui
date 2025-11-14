@@ -8,10 +8,10 @@ export async function loader({ request }: { request: Request }) {
   requireAuth(request);
   try {
     const [roomsResponse, guestsResponse, reservationsResponse, invoicesResponse] = await Promise.all([
-      roomAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
-      guestAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
-      reservationAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
-      invoiceAPI.getAll({ page: 0, size: 1000 }).catch(() => ({ content: [] })),
+      roomAPI.getAll({ page: 0, size: 1000 }, request).catch(() => ({ content: [] })),
+      guestAPI.getAll({ page: 0, size: 1000 }, request).catch(() => ({ content: [] })),
+      reservationAPI.getAll({ page: 0, size: 1000 }, request).catch(() => ({ content: [] })),
+      invoiceAPI.getAll({ page: 0, size: 1000 }, request).catch(() => ({ content: [] })),
     ]);
 
     // Handle both paginated response and array response for backward compatibility

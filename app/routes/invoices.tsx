@@ -25,7 +25,7 @@ export async function loader({ request }: { request: Request }) {
   };
 
   try {
-    const invoicesResponse = await invoiceAPI.getAll(searchParams);
+    const invoicesResponse = await invoiceAPI.getAll(searchParams, request);
 
     // Handle both paginated response and array response for backward compatibility
     const invoicesData: PaginatedResponse<any> = Array.isArray(invoicesResponse) 

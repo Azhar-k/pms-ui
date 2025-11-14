@@ -4,12 +4,12 @@ import { Button } from "../components/Button";
 import { DateInput } from "../components/DateInput";
 import { useState, useEffect } from "react";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
     const [reservation, guestsResponse, rateTypes] = await Promise.all([
-      reservationAPI.getById(Number(params.id)),
-      guestAPI.getAll(),
-      rateTypeAPI.getAll(),
+      reservationAPI.getById(Number(params.id), request),
+      guestAPI.getAll({ page: 0, size: 1000 }, request),
+      rateTypeAPI.getAll(request),
     ]);
     // Handle paginated response
     const guests = Array.isArray(guestsResponse) 
@@ -34,7 +34,7 @@ export async function action({ request, params }: { request: Request; params: { 
   };
 
   try {
-    await reservationAPI.update(Number(params.id), data);
+    await reservationAPI.update(Number(params.id), data, request);
     return redirect(`/bookings/${params.id}`);
   } catch (error) {
     console.error("Error updating booking:", error);

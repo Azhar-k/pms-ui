@@ -2,9 +2,9 @@ import { Form, useLoaderData, redirect } from "react-router";
 import { guestAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const guest = await guestAPI.getById(Number(params.id));
+    const guest = await guestAPI.getById(Number(params.id), request);
     return { guest };
   } catch (error) {
     throw new Response("Guest not found", { status: 404 });
@@ -28,7 +28,7 @@ export async function action({ request, params }: { request: Request; params: { 
   };
 
   try {
-    await guestAPI.update(Number(params.id), data);
+    await guestAPI.update(Number(params.id), data, request);
     return redirect(`/guests/${params.id}`);
   } catch (error) {
     return { error: "Failed to update guest" };

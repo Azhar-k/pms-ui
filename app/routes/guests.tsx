@@ -22,7 +22,7 @@ export async function loader({ request }: { request: Request }) {
   };
 
   try {
-    const guestsResponse = await guestAPI.getAll(searchParams);
+    const guestsResponse = await guestAPI.getAll(searchParams, request);
 
     // Handle both paginated response and array response for backward compatibility
     const guestsData: PaginatedResponse<any> = Array.isArray(guestsResponse) 

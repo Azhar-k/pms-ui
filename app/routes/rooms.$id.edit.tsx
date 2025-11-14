@@ -2,11 +2,11 @@ import { Form, useLoaderData, redirect } from "react-router";
 import { roomAPI, roomTypeAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
     const [room, roomTypes] = await Promise.all([
-      roomAPI.getById(Number(params.id)),
-      roomTypeAPI.getAll(),
+      roomAPI.getById(Number(params.id), request),
+      roomTypeAPI.getAll(request),
     ]);
     return { room, roomTypes };
   } catch (error) {
@@ -29,7 +29,7 @@ export async function action({ request, params }: { request: Request; params: { 
   };
 
   try {
-    await roomAPI.update(Number(params.id), data);
+    await roomAPI.update(Number(params.id), data, request);
     return redirect(`/rooms/${params.id}`);
   } catch (error) {
     return { error: "Failed to update room" };

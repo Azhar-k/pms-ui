@@ -2,9 +2,9 @@ import { Form, useLoaderData, redirect } from "react-router";
 import { rateTypeAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const rateType = await rateTypeAPI.getById(Number(params.id));
+    const rateType = await rateTypeAPI.getById(Number(params.id), request);
     return { rateType };
   } catch (error) {
     throw new Response("Rate type not found", { status: 404 });
@@ -19,7 +19,7 @@ export async function action({ request, params }: { request: Request; params: { 
   };
 
   try {
-    await rateTypeAPI.update(Number(params.id), data);
+    await rateTypeAPI.update(Number(params.id), data, request);
     return redirect(`/rate-types/${params.id}`);
   } catch (error) {
     return { error: "Failed to update rate type" };

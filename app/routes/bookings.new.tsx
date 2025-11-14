@@ -4,11 +4,11 @@ import { Button } from "../components/Button";
 import { DateInput } from "../components/DateInput";
 import { useState, useEffect } from "react";
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
   try {
     const [guestsResponse, rateTypes] = await Promise.all([
-      guestAPI.getAll(),
-      rateTypeAPI.getAll(),
+      guestAPI.getAll({ page: 0, size: 1000 }, request),
+      rateTypeAPI.getAll(request),
     ]);
     // Handle paginated response
     const guests = Array.isArray(guestsResponse) 
@@ -34,7 +34,7 @@ export async function action({ request }: { request: Request }) {
   };
 
   try {
-    await reservationAPI.create(data);
+    await reservationAPI.create(data, request);
     return redirect("/bookings");
   } catch (error) {
     console.error("Error creating booking:", error);

@@ -28,7 +28,7 @@ export async function loader({ request }: { request: Request }) {
   };
 
   try {
-    const reservationsResponse = await reservationAPI.getAll(searchParams);
+    const reservationsResponse = await reservationAPI.getAll(searchParams, request);
 
     // Handle both paginated response and array response for backward compatibility
     const reservationsData: PaginatedResponse<any> = Array.isArray(reservationsResponse) 

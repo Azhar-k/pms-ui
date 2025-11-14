@@ -99,47 +99,47 @@ export const roomAPI = {
     hasBalcony?: boolean;
     hasView?: boolean;
     searchTerm?: string;
-  }) => {
+  }, request?: Request) => {
     const queryString = params ? buildQueryString(params) : '';
-    return fetchAPI<PaginatedResponse<any>>(`/rooms${queryString}`);
+    return fetchAPI<PaginatedResponse<any>>(`/rooms${queryString}`, {}, request);
   },
-  getById: (id: number) => fetchAPI<any>(`/rooms/${id}`),
-  getByNumber: (roomNumber: string) => fetchAPI<any>(`/rooms/number/${roomNumber}`),
-  getByType: (roomTypeId: number) => fetchAPI<any[]>(`/rooms/type/${roomTypeId}`),
-  getAvailable: () => fetchAPI<any[]>('/rooms/available'),
-  getAvailableForDateRange: (checkInDate: string, checkOutDate: string) =>
-    fetchAPI<any[]>(`/rooms/available/range?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`),
-  create: (data: any) => fetchAPI<any>('/rooms', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number, data: any) => fetchAPI<any>(`/rooms/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: number) => fetchAPI<void>(`/rooms/${id}`, { method: 'DELETE' }),
+  getById: (id: number, request?: Request) => fetchAPI<any>(`/rooms/${id}`, {}, request),
+  getByNumber: (roomNumber: string, request?: Request) => fetchAPI<any>(`/rooms/number/${roomNumber}`, {}, request),
+  getByType: (roomTypeId: number, request?: Request) => fetchAPI<any[]>(`/rooms/type/${roomTypeId}`, {}, request),
+  getAvailable: (request?: Request) => fetchAPI<any[]>('/rooms/available', {}, request),
+  getAvailableForDateRange: (checkInDate: string, checkOutDate: string, request?: Request) =>
+    fetchAPI<any[]>(`/rooms/available/range?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`, {}, request),
+  create: (data: any, request?: Request) => fetchAPI<any>('/rooms', { method: 'POST', body: JSON.stringify(data) }, request),
+  update: (id: number, data: any, request?: Request) => fetchAPI<any>(`/rooms/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  delete: (id: number, request?: Request) => fetchAPI<void>(`/rooms/${id}`, { method: 'DELETE' }, request),
 };
 
 // Room Type APIs
 export const roomTypeAPI = {
-  getAll: () => fetchAPI<any[]>('/room-types'),
-  getById: (id: number) => fetchAPI<any>(`/room-types/${id}`),
-  getByName: (name: string) => fetchAPI<any>(`/room-types/name/${name}`),
-  create: (data: any) => fetchAPI<any>('/room-types', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number, data: any) => fetchAPI<any>(`/room-types/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: number) => fetchAPI<void>(`/room-types/${id}`, { method: 'DELETE' }),
+  getAll: (request?: Request) => fetchAPI<any[]>('/room-types', {}, request),
+  getById: (id: number, request?: Request) => fetchAPI<any>(`/room-types/${id}`, {}, request),
+  getByName: (name: string, request?: Request) => fetchAPI<any>(`/room-types/name/${name}`, {}, request),
+  create: (data: any, request?: Request) => fetchAPI<any>('/room-types', { method: 'POST', body: JSON.stringify(data) }, request),
+  update: (id: number, data: any, request?: Request) => fetchAPI<any>(`/room-types/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  delete: (id: number, request?: Request) => fetchAPI<void>(`/room-types/${id}`, { method: 'DELETE' }, request),
 };
 
 // Rate Type APIs
 export const rateTypeAPI = {
-  getAll: () => fetchAPI<any[]>('/rate-types'),
-  getById: (id: number) => fetchAPI<any>(`/rate-types/${id}`),
-  getByName: (name: string) => fetchAPI<any>(`/rate-types/name/${name}`),
-  create: (data: any) => fetchAPI<any>('/rate-types', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number, data: any) => fetchAPI<any>(`/rate-types/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: number) => fetchAPI<void>(`/rate-types/${id}`, { method: 'DELETE' }),
-  getRateForRoomType: (rateTypeId: number, roomTypeId: number) =>
-    fetchAPI<number>(`/rate-types/${rateTypeId}/room-type-rates/${roomTypeId}`),
-  updateRoomTypeRate: (rateTypeId: number, roomTypeId: number, rate: number) =>
-    fetchAPI<any>(`/rate-types/${rateTypeId}/room-type-rates/${roomTypeId}?rate=${rate}`, { method: 'PUT' }),
-  addRoomTypeRate: (rateTypeId: number, data: any) =>
-    fetchAPI<any>(`/rate-types/${rateTypeId}/room-type-rates`, { method: 'POST', body: JSON.stringify(data) }),
-  removeRoomTypeRate: (rateTypeId: number, roomTypeId: number) =>
-    fetchAPI<void>(`/rate-types/${rateTypeId}/room-type-rates/${roomTypeId}`, { method: 'DELETE' }),
+  getAll: (request?: Request) => fetchAPI<any[]>('/rate-types', {}, request),
+  getById: (id: number, request?: Request) => fetchAPI<any>(`/rate-types/${id}`, {}, request),
+  getByName: (name: string, request?: Request) => fetchAPI<any>(`/rate-types/name/${name}`, {}, request),
+  create: (data: any, request?: Request) => fetchAPI<any>('/rate-types', { method: 'POST', body: JSON.stringify(data) }, request),
+  update: (id: number, data: any, request?: Request) => fetchAPI<any>(`/rate-types/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  delete: (id: number, request?: Request) => fetchAPI<void>(`/rate-types/${id}`, { method: 'DELETE' }, request),
+  getRateForRoomType: (rateTypeId: number, roomTypeId: number, request?: Request) =>
+    fetchAPI<number>(`/rate-types/${rateTypeId}/room-type-rates/${roomTypeId}`, {}, request),
+  updateRoomTypeRate: (rateTypeId: number, roomTypeId: number, rate: number, request?: Request) =>
+    fetchAPI<any>(`/rate-types/${rateTypeId}/room-type-rates/${roomTypeId}?rate=${rate}`, { method: 'PUT' }, request),
+  addRoomTypeRate: (rateTypeId: number, data: any, request?: Request) =>
+    fetchAPI<any>(`/rate-types/${rateTypeId}/room-type-rates`, { method: 'POST', body: JSON.stringify(data) }, request),
+  removeRoomTypeRate: (rateTypeId: number, roomTypeId: number, request?: Request) =>
+    fetchAPI<void>(`/rate-types/${rateTypeId}/room-type-rates/${roomTypeId}`, { method: 'DELETE' }, request),
 };
 
 // Guest APIs
@@ -158,15 +158,15 @@ export const guestAPI = {
     country?: string;
     identificationType?: string;
     searchTerm?: string;
-  }) => {
+  }, request?: Request) => {
     const queryString = params ? buildQueryString(params) : '';
-    return fetchAPI<PaginatedResponse<any>>(`/guests${queryString}`);
+    return fetchAPI<PaginatedResponse<any>>(`/guests${queryString}`, {}, request);
   },
-  getById: (id: number) => fetchAPI<any>(`/guests/${id}`),
-  getByEmail: (email: string) => fetchAPI<any>(`/guests/email/${email}`),
-  create: (data: any) => fetchAPI<any>('/guests', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number, data: any) => fetchAPI<any>(`/guests/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: number) => fetchAPI<void>(`/guests/${id}`, { method: 'DELETE' }),
+  getById: (id: number, request?: Request) => fetchAPI<any>(`/guests/${id}`, {}, request),
+  getByEmail: (email: string, request?: Request) => fetchAPI<any>(`/guests/email/${email}`, {}, request),
+  create: (data: any, request?: Request) => fetchAPI<any>('/guests', { method: 'POST', body: JSON.stringify(data) }, request),
+  update: (id: number, data: any, request?: Request) => fetchAPI<any>(`/guests/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  delete: (id: number, request?: Request) => fetchAPI<void>(`/guests/${id}`, { method: 'DELETE' }, request),
 };
 
 // Reservation APIs
@@ -189,21 +189,21 @@ export const reservationAPI = {
     maxNumberOfGuests?: number;
     paymentStatus?: string;
     searchTerm?: string;
-  }) => {
+  }, request?: Request) => {
     const queryString = params ? buildQueryString(params) : '';
-    return fetchAPI<PaginatedResponse<any>>(`/reservations${queryString}`);
+    return fetchAPI<PaginatedResponse<any>>(`/reservations${queryString}`, {}, request);
   },
-  getById: (id: number) => fetchAPI<any>(`/reservations/${id}`),
-  getByNumber: (reservationNumber: string) => fetchAPI<any>(`/reservations/number/${reservationNumber}`),
-  getByStatus: (status: string) => fetchAPI<any[]>(`/reservations/status/${status}`),
-  getByGuest: (guestId: number) => fetchAPI<any[]>(`/reservations/guest/${guestId}`),
+  getById: (id: number, request?: Request) => fetchAPI<any>(`/reservations/${id}`, {}, request),
+  getByNumber: (reservationNumber: string, request?: Request) => fetchAPI<any>(`/reservations/number/${reservationNumber}`, {}, request),
+  getByStatus: (status: string, request?: Request) => fetchAPI<any[]>(`/reservations/status/${status}`, {}, request),
+  getByGuest: (guestId: number, request?: Request) => fetchAPI<any[]>(`/reservations/guest/${guestId}`, {}, request),
   getByDateRange: (startDate: string, endDate: string, request?: Request) =>
     fetchAPI<any[]>(`/reservations/date-range?startDate=${startDate}&endDate=${endDate}`, {}, request),
-  create: (data: any) => fetchAPI<any>('/reservations', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number, data: any) => fetchAPI<any>(`/reservations/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  checkIn: (id: number) => fetchAPI<any>(`/reservations/${id}/check-in`, { method: 'POST' }),
-  checkOut: (id: number) => fetchAPI<any>(`/reservations/${id}/check-out`, { method: 'POST' }),
-  cancel: (id: number) => fetchAPI<any>(`/reservations/${id}/cancel`, { method: 'POST' }),
+  create: (data: any, request?: Request) => fetchAPI<any>('/reservations', { method: 'POST', body: JSON.stringify(data) }, request),
+  update: (id: number, data: any, request?: Request) => fetchAPI<any>(`/reservations/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  checkIn: (id: number, request?: Request) => fetchAPI<any>(`/reservations/${id}/check-in`, { method: 'POST' }, request),
+  checkOut: (id: number, request?: Request) => fetchAPI<any>(`/reservations/${id}/check-out`, { method: 'POST' }, request),
+  cancel: (id: number, request?: Request) => fetchAPI<any>(`/reservations/${id}/cancel`, { method: 'POST' }, request),
 };
 
 // Invoice APIs
@@ -224,20 +224,20 @@ export const invoiceAPI = {
     dueDateTo?: string;
     paymentMethod?: string;
     searchTerm?: string;
-  }) => {
+  }, request?: Request) => {
     const queryString = params ? buildQueryString(params) : '';
-    return fetchAPI<PaginatedResponse<any>>(`/invoices${queryString}`);
+    return fetchAPI<PaginatedResponse<any>>(`/invoices${queryString}`, {}, request);
   },
-  getById: (id: number) => fetchAPI<any>(`/invoices/${id}`),
-  getByNumber: (invoiceNumber: string) => fetchAPI<any>(`/invoices/number/${invoiceNumber}`),
-  getByStatus: (status: string) => fetchAPI<any[]>(`/invoices/status/${status}`),
-  getByReservation: (reservationId: number) => fetchAPI<any[]>(`/invoices/reservation/${reservationId}`),
-  generate: (reservationId: number) => fetchAPI<any>(`/invoices/generate/${reservationId}`, { method: 'POST' }),
-  addItem: (invoiceId: number, data: any) =>
-    fetchAPI<any>(`/invoices/${invoiceId}/items`, { method: 'POST', body: JSON.stringify(data) }),
-  removeItem: (invoiceId: number, itemId: number) =>
-    fetchAPI<any>(`/invoices/${invoiceId}/items/${itemId}`, { method: 'DELETE' }),
-  markAsPaid: (invoiceId: number, paymentMethod: string) =>
-    fetchAPI<any>(`/invoices/${invoiceId}/pay?paymentMethod=${encodeURIComponent(paymentMethod)}`, { method: 'POST' }),
+  getById: (id: number, request?: Request) => fetchAPI<any>(`/invoices/${id}`, {}, request),
+  getByNumber: (invoiceNumber: string, request?: Request) => fetchAPI<any>(`/invoices/number/${invoiceNumber}`, {}, request),
+  getByStatus: (status: string, request?: Request) => fetchAPI<any[]>(`/invoices/status/${status}`, {}, request),
+  getByReservation: (reservationId: number, request?: Request) => fetchAPI<any[]>(`/invoices/reservation/${reservationId}`, {}, request),
+  generate: (reservationId: number, request?: Request) => fetchAPI<any>(`/invoices/generate/${reservationId}`, { method: 'POST' }, request),
+  addItem: (invoiceId: number, data: any, request?: Request) =>
+    fetchAPI<any>(`/invoices/${invoiceId}/items`, { method: 'POST', body: JSON.stringify(data) }, request),
+  removeItem: (invoiceId: number, itemId: number, request?: Request) =>
+    fetchAPI<any>(`/invoices/${invoiceId}/items/${itemId}`, { method: 'DELETE' }, request),
+  markAsPaid: (invoiceId: number, paymentMethod: string, request?: Request) =>
+    fetchAPI<any>(`/invoices/${invoiceId}/pay?paymentMethod=${encodeURIComponent(paymentMethod)}`, { method: 'POST' }, request),
 };
 

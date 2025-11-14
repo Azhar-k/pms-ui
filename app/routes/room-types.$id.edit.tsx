@@ -2,9 +2,9 @@ import { Form, useLoaderData, redirect } from "react-router";
 import { roomTypeAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const roomType = await roomTypeAPI.getById(Number(params.id));
+    const roomType = await roomTypeAPI.getById(Number(params.id), request);
     return { roomType };
   } catch (error) {
     throw new Response("Room type not found", { status: 404 });
@@ -31,7 +31,7 @@ export async function action({ request, params }: { request: Request; params: { 
   };
 
   try {
-    await roomTypeAPI.update(Number(params.id), data);
+    await roomTypeAPI.update(Number(params.id), data, request);
     return redirect(`/room-types/${params.id}`);
   } catch (error) {
     return { error: "Failed to update room type" };

@@ -19,7 +19,7 @@ export async function action({ request }: { request: Request }) {
   };
 
   try {
-    await guestAPI.create(data);
+    await guestAPI.create(data, request);
     return redirect("/guests");
   } catch (error) {
     return { error: "Failed to create guest" };

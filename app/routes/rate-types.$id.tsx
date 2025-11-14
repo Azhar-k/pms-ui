@@ -2,11 +2,11 @@ import { useLoaderData, Link, Form, redirect } from "react-router";
 import { rateTypeAPI, roomTypeAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
     const [rateType, roomTypes] = await Promise.all([
-      rateTypeAPI.getById(Number(params.id)),
-      roomTypeAPI.getAll(),
+      rateTypeAPI.getById(Number(params.id), request),
+      roomTypeAPI.getAll(request),
     ]);
     return { rateType, roomTypes };
   } catch (error) {
@@ -23,11 +23,11 @@ export async function action({ request, params }: { request: Request; params: { 
       roomTypeId: Number(formData.get("roomTypeId")),
       rate: Number(formData.get("rate")),
     };
-    await rateTypeAPI.addRoomTypeRate(Number(params.id), data);
+    await rateTypeAPI.addRoomTypeRate(Number(params.id), data, request);
   } else if (actionType === "removeRate") {
     const roomTypeId = formData.get("roomTypeId");
     if (roomTypeId) {
-      await rateTypeAPI.removeRoomTypeRate(Number(params.id), Number(roomTypeId));
+      await rateTypeAPI.removeRoomTypeRate(Number(params.id), Number(roomTypeId), request);
     }
   }
 

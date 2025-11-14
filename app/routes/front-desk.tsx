@@ -48,9 +48,9 @@ export async function action({ request }: { request: Request }) {
 
   try {
     if (actionType === "checkIn" && reservationId) {
-      await reservationAPI.checkIn(Number(reservationId));
+      await reservationAPI.checkIn(Number(reservationId), request);
     } else if (actionType === "checkOut" && reservationId) {
-      await reservationAPI.checkOut(Number(reservationId));
+      await reservationAPI.checkOut(Number(reservationId), request);
     }
     return redirect(redirectTo);
   } catch (error) {

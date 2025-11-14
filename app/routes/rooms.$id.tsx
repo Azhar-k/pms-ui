@@ -2,9 +2,9 @@ import { useLoaderData, Link } from "react-router";
 import { roomAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const room = await roomAPI.getById(Number(params.id));
+    const room = await roomAPI.getById(Number(params.id), request);
     return { room };
   } catch (error) {
     throw new Response("Room not found", { status: 404 });

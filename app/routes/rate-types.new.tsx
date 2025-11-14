@@ -2,9 +2,9 @@ import { Form, useLoaderData, redirect } from "react-router";
 import { rateTypeAPI, roomTypeAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
   try {
-    const roomTypes = await roomTypeAPI.getAll();
+    const roomTypes = await roomTypeAPI.getAll(request);
     return { roomTypes };
   } catch (error) {
     return { roomTypes: [] };
@@ -33,7 +33,7 @@ export async function action({ request }: { request: Request }) {
   });
 
   try {
-    await rateTypeAPI.create(data);
+    await rateTypeAPI.create(data, request);
     return redirect("/rate-types");
   } catch (error) {
     return { error: "Failed to create rate type" };

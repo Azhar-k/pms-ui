@@ -2,9 +2,9 @@ import { useLoaderData, Link } from "react-router";
 import { guestAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const guest = await guestAPI.getById(Number(params.id));
+    const guest = await guestAPI.getById(Number(params.id), request);
     return { guest };
   } catch (error) {
     throw new Response("Guest not found", { status: 404 });

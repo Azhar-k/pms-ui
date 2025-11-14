@@ -22,7 +22,7 @@ export async function action({ request }: { request: Request }) {
   };
 
   try {
-    await roomTypeAPI.create(data);
+    await roomTypeAPI.create(data, request);
     return redirect("/room-types");
   } catch (error) {
     return { error: "Failed to create room type" };

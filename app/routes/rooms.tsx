@@ -24,8 +24,8 @@ export async function loader({ request }: { request: Request }) {
 
   try {
     const [roomsResponse, roomTypes] = await Promise.all([
-      roomAPI.getAll(searchParams),
-      roomTypeAPI.getAll().catch(() => []),
+      roomAPI.getAll(searchParams, request),
+      roomTypeAPI.getAll(request).catch(() => []),
     ]);
 
     // Handle both paginated response and array response for backward compatibility

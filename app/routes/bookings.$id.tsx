@@ -3,9 +3,9 @@ import { reservationAPI, invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const reservation = await reservationAPI.getById(Number(params.id));
+    const reservation = await reservationAPI.getById(Number(params.id), request);
     return { reservation };
   } catch (error) {
     throw new Response("Booking not found", { status: 404 });
@@ -18,13 +18,13 @@ export async function action({ request, params }: { request: Request; params: { 
 
   try {
     if (actionType === "checkIn") {
-      await reservationAPI.checkIn(Number(params.id));
+      await reservationAPI.checkIn(Number(params.id), request);
     } else if (actionType === "checkOut") {
-      await reservationAPI.checkOut(Number(params.id));
+      await reservationAPI.checkOut(Number(params.id), request);
     } else if (actionType === "cancel") {
-      await reservationAPI.cancel(Number(params.id));
+      await reservationAPI.cancel(Number(params.id), request);
     } else if (actionType === "generateInvoice") {
-      const invoice = await invoiceAPI.generate(Number(params.id));
+      const invoice = await invoiceAPI.generate(Number(params.id), request);
       // Redirect to the newly created invoice
       return redirect(`/invoices/${invoice.id}`);
     }

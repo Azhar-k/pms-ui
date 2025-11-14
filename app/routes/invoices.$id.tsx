@@ -3,9 +3,9 @@ import { invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
-    const invoice = await invoiceAPI.getById(Number(params.id));
+    const invoice = await invoiceAPI.getById(Number(params.id), request);
     return { invoice };
   } catch (error) {
     throw new Response("Invoice not found", { status: 404 });
@@ -22,7 +22,7 @@ export async function action({ request, params }: { request: Request; params: { 
       if (!paymentMethod) {
         return { error: "Payment method is required" };
       }
-      await invoiceAPI.markAsPaid(Number(params.id), paymentMethod);
+      await invoiceAPI.markAsPaid(Number(params.id), paymentMethod, request);
     } else if (actionType === "addItem") {
       const description = formData.get("description") as string;
       const quantityStr = formData.get("quantity") as string;
@@ -59,7 +59,7 @@ export async function action({ request, params }: { request: Request; params: { 
         category: category?.trim() || undefined,
       };
 
-      await invoiceAPI.addItem(Number(params.id), data);
+      await invoiceAPI.addItem(Number(params.id), data, request);
     } else if (actionType === "removeItem") {
       const itemIdStr = formData.get("itemId") as string;
       if (!itemIdStr) {
@@ -69,7 +69,7 @@ export async function action({ request, params }: { request: Request; params: { 
       if (isNaN(itemId)) {
         return { error: "Invalid item ID" };
       }
-      await invoiceAPI.removeItem(Number(params.id), itemId);
+      await invoiceAPI.removeItem(Number(params.id), itemId, request);
     }
     return redirect(`/invoices/${params.id}`);
   } catch (error) {

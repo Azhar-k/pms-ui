@@ -2,11 +2,11 @@ import { useLoaderData, Link } from "react-router";
 import { roomTypeAPI, rateTypeAPI } from "../services/api";
 import { Button } from "../components/Button";
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
   try {
     const [roomTypes, rateTypes] = await Promise.all([
-      roomTypeAPI.getAll().catch(() => []),
-      rateTypeAPI.getAll().catch(() => []),
+      roomTypeAPI.getAll(request).catch(() => []),
+      rateTypeAPI.getAll(request).catch(() => []),
     ]);
     return { roomTypes, rateTypes };
   } catch (error) {
