@@ -20,12 +20,12 @@ export function requireAuth(request?: Request) {
 }
 
 /**
- * Redirect to home if already authenticated
+ * Redirect to front desk if already authenticated
  * Used for login page to prevent logged-in users from accessing it
  */
 export function requireGuest() {
   if (tokenStorage.isAuthenticated()) {
-    throw redirect("/");
+    throw redirect("/front-desk");
   }
 }
 

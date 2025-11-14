@@ -16,7 +16,7 @@ export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const usernameOrEmail = formData.get("usernameOrEmail") as string;
   const password = formData.get("password") as string;
-  const redirectTo = new URL(request.url).searchParams.get("redirect") || "/";
+  const redirectTo = new URL(request.url).searchParams.get("redirect") || "/front-desk";
 
   console.log('[LOGIN ACTION] Form data:', {
     hasUsernameOrEmail: !!usernameOrEmail,
@@ -73,7 +73,7 @@ export default function LoginPage() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = searchParams.get("redirect") || "/front-desk";
 
   const isSubmitting = navigation.state === "submitting";
 
