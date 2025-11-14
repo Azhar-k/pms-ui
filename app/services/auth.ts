@@ -64,7 +64,8 @@ function setCookie(name: string, value: string, days: number = 7): void {
 // Helper to delete cookie
 function deleteCookie(name: string): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+  // Clear cookie with expired date and same attributes as when setting
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Strict`;
 }
 
 // Token management

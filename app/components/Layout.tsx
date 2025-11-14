@@ -1,7 +1,53 @@
-import { Link, useLocation, Outlet, Form } from "react-router";
+import { Link, useLocation, Outlet } from "react-router";
 import { tokenStorage } from "../services/auth";
 import { useEffect, useState } from "react";
 import type { UserResponse } from "../services/auth";
+
+function LogoutButton() {
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleLogout = async () => {
+    setShowConfirm(false);
+    // Submit the form to trigger the logout action
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/logout';
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  if (showConfirm) {
+    return (
+      <div className="space-y-2">
+        <div className="text-xs text-gray-600 mb-2">Are you sure?</div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleLogout}
+            className="flex-1 px-3 py-2 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Yes, Logout
+          </button>
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setShowConfirm(true)}
+      className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+    >
+      <span className="mr-2">🚪</span>
+      Logout
+    </button>
+  );
+}
 
 const navigation = [
   { name: "Front Desk", href: "/front-desk", icon: "🖥️" },
@@ -77,15 +123,7 @@ export default function Layout() {
                 )}
               </div>
             )}
-            <Form method="post" action="/logout">
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                <span className="mr-2">🚪</span>
-                Logout
-              </button>
-            </Form>
+            <LogoutButton />
           </div>
         </div>
       </div>
