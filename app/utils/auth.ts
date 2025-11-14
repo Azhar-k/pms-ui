@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { tokenStorage } from "../services/auth";
+import { tokenStorage, type UserResponse } from "../services/auth";
 
 /**
  * Require authentication for a route
@@ -16,6 +16,25 @@ export function requireAuth(request?: Request) {
         : '/';
     console.log('[REQUIRE_AUTH] Not authenticated, redirecting to login');
     throw redirect(`/login?redirect=${encodeURIComponent(redirectTo)}`);
+  }
+}
+
+/**
+ * Check if user has admin role
+ */
+export function isAdmin(user: UserResponse | null): boolean {
+  return user?.roles?.includes('ADMIN') || user?.roles?.includes('admin') || false;
+}
+
+/**
+ * Require admin role for a route
+ * Redirects to home if not admin
+ */
+export function requireAdmin(request?: Request) {
+  requireAuth(request);
+  const user = tokenStorage.getUser(request);
+  if (!isAdmin(user)) {
+    throw redirect('/');
   }
 }
 

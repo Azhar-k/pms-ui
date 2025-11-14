@@ -6,6 +6,11 @@ const API_BASE_URL = (typeof window !== 'undefined' && window.location.hostname 
   ? '/api'  // Client-side: Use Vite proxy in development
   : 'http://localhost:8080/api';  // Server-side or production: Use absolute URL
 
+// User Service API Base URL
+const USER_SERVICE_API_BASE_URL = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+  ? '/api/v1'  // Client-side: Use Vite proxy in development
+  : 'http://localhost:8073/api/v1';  // Server-side or production: Use absolute URL
+
 function buildQueryString(params: Record<string, any>): string {
   const searchParams = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
@@ -23,6 +28,78 @@ async function fetchAPI<T>(
   request?: Request
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  // Get access token (from cookies if request is provided, otherwise from cookies on client)
+  const token = tokenStorage.getAccessToken(request);
+  
+  // Build headers
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+  
+  // Add authorization header if token exists
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    // Handle 204 No Content
+    if (response.status === 204) {
+      return {} as T;
+    }
+
+    if (!response.ok) {
+      // Handle 401 Unauthorized - token expired or invalid
+      if (response.status === 401) {
+        tokenStorage.clear();
+        
+        // For client-side requests, redirect to login immediately
+        if (typeof window !== 'undefined' && !request) {
+          const currentPath = window.location.pathname;
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          // Return a promise that never resolves to prevent further execution
+          return new Promise(() => {});
+        }
+        
+        // For server-side requests, throw error so route protection can handle it
+        throw new Error('UNAUTHORIZED');
+      }
+      
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    // Check if response has content before parsing
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    }
+    
+    return {} as T;
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      // Check if it's a CORS error
+      if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+        throw new Error(`CORS error: Unable to connect to API at ${url}. Please ensure the backend server is running and CORS is properly configured, or restart the Vite dev server to enable the proxy.`);
+      }
+      throw new Error(`Network error: Unable to connect to API at ${url}. Please ensure the backend server is running.`);
+    }
+    throw error;
+  }
+}
+
+async function fetchUserServiceAPI<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  request?: Request
+): Promise<T> {
+  const url = `${USER_SERVICE_API_BASE_URL}${endpoint}`;
   
   // Get access token (from cookies if request is provided, otherwise from cookies on client)
   const token = tokenStorage.getAccessToken(request);
@@ -256,5 +333,68 @@ export const invoiceAPI = {
     fetchAPI<any>(`/invoices/${invoiceId}/items/${itemId}`, { method: 'DELETE' }, request),
   markAsPaid: (invoiceId: number, paymentMethod: string, request?: Request) =>
     fetchAPI<any>(`/invoices/${invoiceId}/pay?paymentMethod=${encodeURIComponent(paymentMethod)}`, { method: 'POST' }, request),
+};
+
+// User Management APIs (User Service)
+
+export const userManagementAPI = {
+  // Users
+  getAllUsers: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+    username?: string;
+    email?: string;
+    status?: string;
+  }, request?: Request) => {
+    const queryString = params ? buildQueryString(params) : '';
+    return fetchUserServiceAPI<{ success: boolean; data: PaginatedResponse<any> }>(`/users${queryString}`, {}, request);
+  },
+  getUserById: (id: number, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/users/${id}`, {}, request),
+  createUser: (data: any, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/admin/users`, { method: 'POST', body: JSON.stringify(data) }, request),
+  updateUser: (id: number, data: any, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  deleteUser: (id: number, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean }>(`/admin/users/${id}`, { method: 'DELETE' }, request),
+  updateUserStatus: (id: number, status: string, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/admin/users/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }, request),
+  assignRole: (userId: number, roleName: string, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/admin/users/${userId}/roles?roleName=${encodeURIComponent(roleName)}`, { method: 'POST' }, request),
+  removeRole: (userId: number, roleName: string, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/admin/users/${userId}/roles?roleName=${encodeURIComponent(roleName)}`, { method: 'DELETE' }, request),
+  resetPassword: (userId: number, newPassword: string, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean }>(`/admin/users/${userId}/reset-password`, { method: 'POST', body: JSON.stringify({ newPassword }) }, request),
+  
+  // Roles
+  getAllRoles: (request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any[] }>(`/roles`, {}, request),
+  getRoleById: (id: number, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/roles/${id}`, {}, request),
+  getRoleByName: (name: string, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/roles/name/${encodeURIComponent(name)}`, {}, request),
+  createRole: (data: any, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/roles`, { method: 'POST', body: JSON.stringify(data) }, request),
+  updateRole: (id: number, data: any, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean; data: any }>(`/roles/${id}`, { method: 'PUT', body: JSON.stringify(data) }, request),
+  deleteRole: (id: number, request?: Request) => 
+    fetchUserServiceAPI<{ success: boolean }>(`/roles/${id}`, { method: 'DELETE' }, request),
+  
+  // Audit Logs
+  getAuditLogs: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+    userId?: number;
+    action?: string;
+    startDate?: string;
+    endDate?: string;
+  }, request?: Request) => {
+    const queryString = params ? buildQueryString(params) : '';
+    return fetchUserServiceAPI<{ success: boolean; data: PaginatedResponse<any> }>(`/admin/audit-logs${queryString}`, {}, request);
+  },
 };
 

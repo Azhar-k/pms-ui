@@ -31,5 +31,15 @@ export default [
     route("front-desk", "routes/front-desk.tsx"),
     route("invoices", "routes/invoices.tsx"),
     route("invoices/:id", "routes/invoices.$id.tsx"),
+    // Admin routes
+    route("admin/users", "routes/admin.users.tsx"),
+    route("admin/users/new", "routes/admin.users.new.tsx"),
+    route("admin/users/:id", "routes/admin.users.$id.tsx"),
+    route("admin/users/:id/edit", "routes/admin.users.$id.edit.tsx"),
+    route("admin/roles", "routes/admin.roles.tsx"),
+    route("admin/roles/new", "routes/admin.roles.new.tsx"),
+    route("admin/roles/:id", "routes/admin.roles.$id.tsx"),
+    route("admin/roles/:id/edit", "routes/admin.roles.$id.edit.tsx"),
+    route("admin/audit-logs", "routes/admin.audit-logs.tsx"),
   ]),
 ] satisfies RouteConfig;

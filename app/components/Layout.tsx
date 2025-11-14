@@ -2,6 +2,7 @@ import { Link, useLocation, Outlet } from "react-router";
 import { tokenStorage } from "../services/auth";
 import { useEffect, useState, useRef } from "react";
 import type { UserResponse } from "../services/auth";
+import { isAdmin } from "../utils/auth";
 
 function LogoutButton({ isExpanded }: { isExpanded: boolean }) {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -58,6 +59,12 @@ const navigation = [
   { name: "Room Types", href: "/room-types", icon: "🛏️" },
   { name: "Guests", href: "/guests", icon: "👤" },
   { name: "Invoices", href: "/invoices", icon: "🧾" },
+];
+
+const adminNavigation = [
+  { name: "Users", href: "/admin/users", icon: "👥" },
+  { name: "Roles", href: "/admin/roles", icon: "🔐" },
+  { name: "Audit Logs", href: "/admin/audit-logs", icon: "📋" },
 ];
 
 export default function Layout() {
@@ -232,6 +239,40 @@ export default function Layout() {
                 </Link>
               );
             })}
+            
+            {/* Admin Navigation - Only show if user is admin */}
+            {user && isAdmin(user) && (
+              <>
+                {isExpanded && (
+                  <div className="pt-4 mt-4 border-t border-gray-200">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Administration
+                    </div>
+                  </div>
+                )}
+                {adminNavigation.map((item) => {
+                  const isActive = location.pathname === item.href || 
+                    location.pathname.startsWith(item.href + "/");
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
+                        isActive
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-700 hover:bg-gray-100"
+                      } ${isExpanded ? 'justify-start' : 'justify-center'}`}
+                      title={!isExpanded ? item.name : undefined}
+                    >
+                      <span className={`text-lg ${isExpanded ? 'mr-3' : ''}`}>{item.icon}</span>
+                      {isExpanded && (
+                        <span className="whitespace-nowrap">{item.name}</span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </>
+            )}
           </nav>
 
           {/* User Info and Logout */}
