@@ -1,4 +1,4 @@
-import { useLoaderData, Link, Form, redirect } from "react-router";
+import { useLoaderData, Link, Form, redirect, useActionData } from "react-router";
 import { userManagementAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { handleAPIError } from "../utils/auth";
@@ -41,16 +41,60 @@ export async function action({ params, request }: { params: { id: string }; requ
     } else if (actionType === "resetPassword") {
       const newPassword = formData.get("newPassword") as string;
       await userManagementAPI.resetPassword(Number(params.id), newPassword, request);
+      return { success: true, message: "Password reset successfully" };
     }
-    return redirect(`/admin/users/${params.id}`);
+    return { success: true };
   } catch (error) {
+    // Extract error message from the error
+    let errorMessage = "Failed to perform action";
+    if (error instanceof Error) {
+      // Check if it's a validation error with a specific message
+      if ((error as any).message && error.message.includes('API Error:')) {
+        // Extract the actual error message after "API Error: 400 - " or "API Error: 400  - "
+        // Handle both with and without status text
+        const match = error.message.match(/API Error: \d+\s+[^-]*-\s*(.+)/s);
+        if (match && match[1]) {
+          try {
+            // Try to parse as JSON to extract validation message
+            const errorData = JSON.parse(match[1].trim());
+            if (errorData.data && typeof errorData.data === 'object') {
+              // Extract field-specific validation errors
+              const fieldErrors = Object.entries(errorData.data)
+                .map(([field, message]) => {
+                  // Capitalize field name and format message
+                  const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+                  return `${fieldName}: ${message}`;
+                })
+                .join('. ');
+              errorMessage = fieldErrors || errorData.message || errorMessage;
+            } else {
+              errorMessage = errorData.message || errorMessage;
+            }
+          } catch {
+            // If not JSON, use the message as is
+            errorMessage = match[1].trim();
+          }
+        } else {
+          errorMessage = error.message;
+        }
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
+    // Don't redirect on validation errors (400), but redirect on other errors
+    if (error instanceof Error && (error as any).status === 400) {
+      return { success: false, error: errorMessage };
+    }
+    
     handleAPIError(error, request);
-    return { error: "Failed to perform action" };
+    return { success: false, error: errorMessage };
   }
 }
 
 export default function AdminUserDetailPage() {
   const { user, allRoles } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -78,6 +122,18 @@ export default function AdminUserDetailPage() {
           </Button>
         </div>
       </div>
+
+      {/* Success/Error Messages */}
+      {actionData?.success && actionData.message && (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+          {actionData.message}
+        </div>
+      )}
+      {actionData?.error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          {actionData.error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
