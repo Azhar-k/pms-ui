@@ -31,6 +31,7 @@ export default [
     route("front-desk", "routes/front-desk.tsx"),
     route("invoices", "routes/invoices.tsx"),
     route("invoices/:id", "routes/invoices.$id.tsx"),
+    route("profile", "routes/profile.tsx"),
     // Admin routes
     route("admin/users", "routes/admin.users.tsx"),
     route("admin/users/new", "routes/admin.users.new.tsx"),

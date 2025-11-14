@@ -237,9 +237,9 @@ export const authAPI = {
     tokenStorage.clear();
   },
 
-  getCurrentUser: async (): Promise<UserResponse> => {
+  getCurrentUser: async (request?: Request): Promise<UserResponse> => {
     console.log('[AUTH] getCurrentUser called');
-    const token = tokenStorage.getAccessToken();
+    const token = tokenStorage.getAccessToken(request);
     console.log('[AUTH] Token from storage:', { hasToken: !!token, tokenLength: token?.length || 0 });
     
     if (!token) {
@@ -247,8 +247,15 @@ export const authAPI = {
       throw new Error('No access token available');
     }
 
-    console.log('[AUTH] Fetching user info from:', `${USER_SERVICE_BASE_URL}/users/me`);
-    const response = await fetch(`${USER_SERVICE_BASE_URL}/users/me`, {
+    // Always use the user service at localhost:8073
+    // Server-side: Direct URL to user service
+    // Client-side: Use Vite proxy (/api/v1 -> localhost:8073)
+    const baseUrl = request 
+      ? 'http://localhost:8073/api/v1'  // Server-side: Direct to user service on port 8073
+      : '/api/v1';  // Client-side: Use Vite proxy (configured to forward to localhost:8073)
+
+    console.log('[AUTH] Fetching user info from:', `${baseUrl}/users/me`);
+    const response = await fetch(`${baseUrl}/users/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -326,6 +333,98 @@ export const authAPI = {
     tokenStorage.setRefreshToken(result.data.refreshToken);
 
     return result.data;
+  },
+
+  updateCurrentUser: async (data: { email?: string; phone?: string }, request?: Request): Promise<UserResponse> => {
+    const token = tokenStorage.getAccessToken(request);
+    
+    if (!token) {
+      throw new Error('No access token available');
+    }
+
+    // Use absolute URL for server-side requests, relative for client-side
+    const baseUrl = request 
+      ? 'http://localhost:8073/api/v1'
+      : '/api/v1';
+
+    const response = await fetch(`${baseUrl}/users/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        tokenStorage.clear();
+        if (typeof window !== 'undefined' && !request) {
+          const currentPath = window.location.pathname;
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          return new Promise(() => {}) as Promise<UserResponse>;
+        }
+        throw new Error('Session expired. Please login again.');
+      }
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`Failed to update user: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result: ApiResponse<UserResponse> = await response.json();
+    
+    if (!result.success || !result.data) {
+      throw new Error(result.message || 'Failed to update user');
+    }
+
+    // Store updated user info
+    tokenStorage.setUser(result.data);
+
+    return result.data;
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string, request?: Request): Promise<void> => {
+    const token = tokenStorage.getAccessToken(request);
+    
+    if (!token) {
+      throw new Error('No access token available');
+    }
+
+    // Use absolute URL for server-side requests, relative for client-side
+    const baseUrl = request 
+      ? 'http://localhost:8073/api/v1'
+      : '/api/v1';
+
+    const response = await fetch(`${baseUrl}/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        tokenStorage.clear();
+        if (typeof window !== 'undefined' && !request) {
+          const currentPath = window.location.pathname;
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          return new Promise(() => {});
+        }
+        throw new Error('Session expired. Please login again.');
+      }
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`Failed to change password: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result: ApiResponse<void> = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to change password');
+    }
   },
 };
 

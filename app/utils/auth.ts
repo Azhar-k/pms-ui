@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { tokenStorage, type UserResponse } from "../services/auth";
+import { tokenStorage, authAPI, type UserResponse } from "../services/auth";
 
 /**
  * Require authentication for a route
@@ -21,19 +21,35 @@ export function requireAuth(request?: Request) {
 
 /**
  * Check if user has admin role
+ * Case-insensitive check for 'admin' role
  */
 export function isAdmin(user: UserResponse | null): boolean {
-  return user?.roles?.includes('ADMIN') || user?.roles?.includes('admin') || false;
+  if (!user?.roles || user.roles.length === 0) {
+    return false;
+  }
+  return user.roles.some(role => role.toUpperCase() === 'ADMIN');
 }
 
 /**
  * Require admin role for a route
+ * Fetches current user from API and checks for admin role
  * Redirects to home if not admin
  */
-export function requireAdmin(request?: Request) {
+export async function requireAdmin(request?: Request) {
   requireAuth(request);
-  const user = tokenStorage.getUser(request);
-  if (!isAdmin(user)) {
+  
+  try {
+    // Fetch current user from API to get fresh role data
+    const user = await authAPI.getCurrentUser(request);
+    if (!isAdmin(user)) {
+      throw redirect('/');
+    }
+  } catch (error) {
+    // If fetching user fails or user is not admin, redirect to home
+    if (error instanceof Response && error.status === 302) {
+      // Re-throw redirect
+      throw error;
+    }
     throw redirect('/');
   }
 }

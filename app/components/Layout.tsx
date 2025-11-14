@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet } from "react-router";
-import { tokenStorage } from "../services/auth";
+import { tokenStorage, authAPI } from "../services/auth";
 import { useEffect, useState, useRef } from "react";
 import type { UserResponse } from "../services/auth";
 import { isAdmin } from "../utils/auth";
@@ -59,6 +59,7 @@ const navigation = [
   { name: "Room Types", href: "/room-types", icon: "🛏️" },
   { name: "Guests", href: "/guests", icon: "👤" },
   { name: "Invoices", href: "/invoices", icon: "🧾" },
+  { name: "Profile", href: "/profile", icon: "⚙️" },
 ];
 
 const adminNavigation = [
@@ -77,9 +78,19 @@ export default function Layout() {
   const dragStartExpanded = useRef<boolean>(false);
 
   useEffect(() => {
-    // Load user info from storage
-    const userData = tokenStorage.getUser();
-    setUser(userData);
+    // Fetch current user from API to get fresh role data
+    const fetchUser = async () => {
+      try {
+        const userData = await authAPI.getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        // If fetch fails, fall back to stored user data
+        const storedUser = tokenStorage.getUser();
+        setUser(storedUser);
+      }
+    };
+    
+    fetchUser();
   }, []);
 
   const hasMoved = useRef<boolean>(false);

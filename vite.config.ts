@@ -17,13 +17,14 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      // More specific routes must come first
+      '/api/v1': {
+        target: 'http://localhost:8073',
         changeOrigin: true,
         secure: false,
       },
-      '/api/v1': {
-        target: 'http://localhost:8073',
+      '/api': {
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },
