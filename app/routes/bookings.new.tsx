@@ -3,6 +3,7 @@ import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../services/api"
 import { Button } from "../components/Button";
 import { DateInput } from "../components/DateInput";
 import { useState, useEffect } from "react";
+import { handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   try {
@@ -16,6 +17,7 @@ export async function loader({ request }: { request: Request }) {
       : guestsResponse.content || [];
     return { guests, rateTypes };
   } catch (error) {
+    handleAPIError(error, request);
     console.error("Error loading booking form data:", error);
     return { guests: [], rateTypes: [] };
   }
@@ -37,6 +39,7 @@ export async function action({ request }: { request: Request }) {
     await reservationAPI.create(data, request);
     return redirect("/bookings");
   } catch (error) {
+    handleAPIError(error, request);
     console.error("Error creating booking:", error);
     return { error: error instanceof Error ? error.message : "Failed to create booking" };
   }

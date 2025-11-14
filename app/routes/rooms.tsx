@@ -3,6 +3,7 @@ import { roomAPI, roomTypeAPI, type PaginatedResponse } from "../services/api";
 import { Button } from "../components/Button";
 import { RoomKanbanBoard } from "../components/RoomKanbanBoard";
 import { Pagination } from "../components/Pagination";
+import { handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -43,6 +44,7 @@ export async function loader({ request }: { request: Request }) {
 
     return { roomsData, roomTypes };
   } catch (error) {
+    handleAPIError(error, request);
     return { 
       roomsData: { content: [], totalElements: 0, totalPages: 0, size: 10, number: 0, first: true, last: true },
       roomTypes: []

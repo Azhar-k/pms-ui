@@ -1,7 +1,7 @@
 import { useLoaderData } from "react-router";
 import { roomAPI, guestAPI, reservationAPI, invoiceAPI } from "../services/api";
 import { Link } from "react-router";
-import { requireAuth } from "../utils/auth";
+import { requireAuth, handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   // Ensure user is authenticated (double check, though ProtectedLayout should handle this)
@@ -44,6 +44,7 @@ export async function loader({ request }: { request: Request }) {
       },
     };
   } catch (error) {
+    handleAPIError(error, request);
     return {
       stats: {
         totalRooms: 0,

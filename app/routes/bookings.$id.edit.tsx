@@ -3,6 +3,7 @@ import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../services/api"
 import { Button } from "../components/Button";
 import { DateInput } from "../components/DateInput";
 import { useState, useEffect } from "react";
+import { handleAPIError } from "../utils/auth";
 
 export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
@@ -17,6 +18,7 @@ export async function loader({ params, request }: { params: { id: string }; requ
       : guestsResponse.content || [];
     return { reservation, guests, rateTypes };
   } catch (error) {
+    handleAPIError(error, request);
     throw new Response("Booking not found", { status: 404 });
   }
 }
@@ -37,6 +39,7 @@ export async function action({ request, params }: { request: Request; params: { 
     await reservationAPI.update(Number(params.id), data, request);
     return redirect(`/bookings/${params.id}`);
   } catch (error) {
+    handleAPIError(error, request);
     console.error("Error updating booking:", error);
     return { error: error instanceof Error ? error.message : "Failed to update booking" };
   }

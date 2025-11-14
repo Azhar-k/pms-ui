@@ -2,12 +2,14 @@ import { useLoaderData, Link, Form, redirect, useActionData } from "react-router
 import { reservationAPI, invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
+import { handleAPIError } from "../utils/auth";
 
 export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
     const reservation = await reservationAPI.getById(Number(params.id), request);
     return { reservation };
   } catch (error) {
+    handleAPIError(error, request);
     throw new Response("Booking not found", { status: 404 });
   }
 }
@@ -30,6 +32,7 @@ export async function action({ request, params }: { request: Request; params: { 
     }
     return redirect(`/bookings/${params.id}`);
   } catch (error) {
+    handleAPIError(error, request);
     console.error("Error in booking action:", error);
     return { error: error instanceof Error ? error.message : "Action failed" };
   }

@@ -3,6 +3,7 @@ import { invoiceAPI, type PaginatedResponse } from "../services/api";
 import { Button } from "../components/Button";
 import { Pagination } from "../components/Pagination";
 import { formatDisplayDate } from "../utils/dateFormat";
+import { handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -42,6 +43,7 @@ export async function loader({ request }: { request: Request }) {
 
     return { invoicesData };
   } catch (error) {
+    handleAPIError(error, request);
     return { 
       invoicesData: { content: [], totalElements: 0, totalPages: 0, size: 10, number: 0, first: true, last: true }
     };

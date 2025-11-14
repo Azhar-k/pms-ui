@@ -29,3 +29,18 @@ export function requireGuest() {
   }
 }
 
+/**
+ * Handle API errors in route loaders/actions
+ * If the error is UNAUTHORIZED, redirects to login
+ * Otherwise, re-throws the error
+ */
+export function handleAPIError(error: unknown, request?: Request): never {
+  if (error instanceof Error && error.message === 'UNAUTHORIZED') {
+    const redirectTo = request 
+      ? new URL(request.url).pathname 
+      : '/';
+    throw redirect(`/login?redirect=${encodeURIComponent(redirectTo)}`);
+  }
+  throw error;
+}
+

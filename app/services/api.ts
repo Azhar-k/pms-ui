@@ -53,7 +53,16 @@ async function fetchAPI<T>(
       // Handle 401 Unauthorized - token expired or invalid
       if (response.status === 401) {
         tokenStorage.clear();
-        // Redirect to login will be handled by route protection
+        
+        // For client-side requests, redirect to login immediately
+        if (typeof window !== 'undefined' && !request) {
+          const currentPath = window.location.pathname;
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          // Return a promise that never resolves to prevent further execution
+          return new Promise(() => {});
+        }
+        
+        // For server-side requests, throw error so route protection can handle it
         throw new Error('UNAUTHORIZED');
       }
       

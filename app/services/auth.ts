@@ -261,6 +261,15 @@ export const authAPI = {
       if (response.status === 401) {
         console.error('[AUTH] 401 Unauthorized - clearing tokens');
         tokenStorage.clear();
+        
+        // Redirect to login on client-side
+        if (typeof window !== 'undefined') {
+          const currentPath = window.location.pathname;
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          // Return a promise that never resolves to prevent further execution
+          return new Promise(() => {}) as Promise<UserResponse>;
+        }
+        
         throw new Error('Session expired. Please login again.');
       }
       const errorText = await response.text().catch(() => response.statusText);

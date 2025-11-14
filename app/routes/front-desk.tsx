@@ -3,6 +3,7 @@ import { useLoaderData, Link, Form, redirect, useNavigate, useSearchParams, useA
 import { reservationAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { formatDisplayDate } from "../utils/dateFormat";
+import { handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -35,6 +36,7 @@ export async function loader({ request }: { request: Request }) {
     const reservations = await reservationAPI.getByDateRange(startDate, endDate, request);
     return { reservations, currentDate: dateParam, view };
   } catch (error) {
+    handleAPIError(error, request);
     console.error("Error loading reservations:", error);
     return { reservations: [], currentDate: dateParam, view };
   }
@@ -54,6 +56,7 @@ export async function action({ request }: { request: Request }) {
     }
     return redirect(redirectTo);
   } catch (error) {
+    handleAPIError(error, request);
     console.error("Error in front desk action:", error);
     return { error: error instanceof Error ? error.message : "Action failed" };
   }
