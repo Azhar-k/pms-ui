@@ -46,8 +46,10 @@ export async function action({ request }: { request: Request }) {
     const response = Response.redirect(redirectUrl, 302);
     
     // Create new headers with cookies
+    // Access token: NOT HttpOnly so JavaScript can read it for client-side API calls
+    // Refresh token: HttpOnly for security (only used server-side)
     const headers = new Headers(response.headers);
-    headers.append('Set-Cookie', `auth_access_token=${encodeURIComponent(authResult.accessToken)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`);
+    headers.append('Set-Cookie', `auth_access_token=${encodeURIComponent(authResult.accessToken)}; Path=/; SameSite=Strict; Max-Age=86400`);
     headers.append('Set-Cookie', `auth_refresh_token=${encodeURIComponent(authResult.refreshToken)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800`);
     
     // Create response with cookies

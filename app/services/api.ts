@@ -1,6 +1,10 @@
 import { tokenStorage } from './auth';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+// Use relative URL for client-side requests (Vite proxy handles it in dev)
+// Use absolute URL for server-side requests (loaders/actions) or production
+const API_BASE_URL = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+  ? '/api'  // Client-side: Use Vite proxy in development
+  : 'http://localhost:8080/api';  // Server-side or production: Use absolute URL
 
 function buildQueryString(params: Record<string, any>): string {
   const searchParams = new URLSearchParams();
@@ -66,6 +70,10 @@ async function fetchAPI<T>(
     return {} as T;
   } catch (error) {
     if (error instanceof TypeError && error.message.includes('fetch')) {
+      // Check if it's a CORS error
+      if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+        throw new Error(`CORS error: Unable to connect to API at ${url}. Please ensure the backend server is running and CORS is properly configured, or restart the Vite dev server to enable the proxy.`);
+      }
       throw new Error(`Network error: Unable to connect to API at ${url}. Please ensure the backend server is running.`);
     }
     throw error;

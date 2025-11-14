@@ -1,4 +1,8 @@
-const USER_SERVICE_BASE_URL = 'http://localhost:8073/api/v1';
+// Use relative URL for client-side requests (Vite proxy handles it in dev)
+// Use absolute URL for server-side requests (loaders/actions) or production
+const USER_SERVICE_BASE_URL = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+  ? '/api/v1'  // Client-side: Use Vite proxy in development
+  : 'http://localhost:8073/api/v1';  // Server-side or production: Use absolute URL
 
 export interface AuthResponse {
   accessToken: string;

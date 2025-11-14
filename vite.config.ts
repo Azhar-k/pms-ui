@@ -15,6 +15,20 @@ export default defineConfig({
     ...(isTest ? [] : [reactRouter()]),
     tsconfigPaths(),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api/v1': {
+        target: 'http://localhost:8073',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",
