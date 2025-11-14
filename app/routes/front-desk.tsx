@@ -357,8 +357,8 @@ export default function FrontDeskPage() {
                 <div
                   key={index}
                   className={`min-h-20 p-1.5 border-b border-r border-gray-200 ${
-                    !isCurrentMonth ? "bg-gray-50" : "bg-white"
-                  } ${isToday ? "ring-1 ring-blue-500" : ""} ${
+                    !isCurrentMonth ? "bg-gray-50" : isToday ? "bg-yellow-50" : "bg-white"
+                  } ${isToday ? "ring-1 ring-yellow-400" : ""} ${
                     dayReservations.length > 0 ? "cursor-pointer hover:bg-gray-50" : ""
                   }`}
                   onClick={() => {
@@ -439,8 +439,8 @@ export default function FrontDeskPage() {
               return (
                 <div
                   key={index}
-                  className={`min-h-96 p-3 border-b border-r border-gray-200 bg-white ${
-                    isToday ? "ring-2 ring-blue-500" : ""
+                  className={`min-h-96 p-3 border-b border-r border-gray-200 ${
+                    isToday ? "bg-yellow-50 ring-2 ring-yellow-400" : "bg-white"
                   }`}
                 >
                   <div
