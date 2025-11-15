@@ -3,7 +3,7 @@ import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../services/api"
 import { Button } from "../components/Button";
 import { DateInput } from "../components/DateInput";
 import { useState, useEffect } from "react";
-import { handleAPIError } from "../utils/auth";
+import { handleAPIError, parseAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   try {
@@ -39,9 +39,15 @@ export async function action({ request }: { request: Request }) {
     await reservationAPI.create(data, request);
     return redirect("/bookings");
   } catch (error) {
+    const { status, message } = parseAPIError(error);
+    
+    // Don't redirect on validation errors (400) or not found (404) - show error to user
+    if (status === 400 || status === 404) {
+      return { error: message || "Failed to create booking. Please check your input and try again." };
+    }
+    
     handleAPIError(error, request);
-    console.error("Error creating booking:", error);
-    return { error: error instanceof Error ? error.message : "Failed to create booking" };
+    return { error: message || "Failed to create booking. Please try again." };
   }
 }
 

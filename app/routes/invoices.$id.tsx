@@ -2,6 +2,7 @@ import { useLoaderData, Link, Form, redirect, useActionData } from "react-router
 import { invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
+import { parseAPIError } from "../utils/auth";
 
 export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
@@ -73,8 +74,16 @@ export async function action({ request, params }: { request: Request; params: { 
     }
     return redirect(`/invoices/${params.id}`);
   } catch (error) {
-    console.error("Error in invoice action:", error);
-    return { error: error instanceof Error ? error.message : "Action failed" };
+    const { status, message } = parseAPIError(error);
+    
+    // Provide user-friendly error messages based on status code
+    if (status === 404) {
+      return { error: message || "Invoice not found. It may have been deleted." };
+    } else if (status === 400) {
+      return { error: message || "Validation failed. Please check your input and try again." };
+    } else {
+      return { error: message || "Action failed. Please try again." };
+    }
   }
 }
 

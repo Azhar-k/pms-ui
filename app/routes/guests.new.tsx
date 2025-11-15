@@ -1,6 +1,7 @@
-import { Form, redirect } from "react-router";
+import { Form, redirect, useActionData } from "react-router";
 import { guestAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { parseAPIError } from "../utils/auth";
 
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
@@ -22,17 +23,35 @@ export async function action({ request }: { request: Request }) {
     await guestAPI.create(data, request);
     return redirect("/guests");
   } catch (error) {
-    return { error: "Failed to create guest" };
+    const { status, message } = parseAPIError(error);
+    
+    // Provide user-friendly error messages based on status code
+    if (status === 409) {
+      return { error: message || "A guest with this email already exists. Please use a different email." };
+    } else if (status === 400) {
+      return { error: message || "Validation failed. Please check your input and try again." };
+    } else {
+      return { error: message || "Failed to create guest. Please try again." };
+    }
   }
 }
 
 export default function NewGuestPage() {
+  const actionData = useActionData<typeof action>();
+  
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Register New Guest</h1>
         <p className="mt-2 text-gray-600">Add a new guest to the system</p>
       </div>
+
+      {actionData?.error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="font-medium">Error:</p>
+          <p className="text-sm">{actionData.error}</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
         <Form method="post" className="space-y-6">

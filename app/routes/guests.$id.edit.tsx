@@ -1,6 +1,7 @@
-import { Form, useLoaderData, redirect } from "react-router";
+import { Form, useLoaderData, redirect, useActionData } from "react-router";
 import { guestAPI } from "../services/api";
 import { Button } from "../components/Button";
+import { parseAPIError } from "../utils/auth";
 
 export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
@@ -31,12 +32,24 @@ export async function action({ request, params }: { request: Request; params: { 
     await guestAPI.update(Number(params.id), data, request);
     return redirect(`/guests/${params.id}`);
   } catch (error) {
-    return { error: "Failed to update guest" };
+    const { status, message } = parseAPIError(error);
+    
+    // Provide user-friendly error messages based on status code
+    if (status === 404) {
+      return { error: message || "Guest not found. It may have been deleted." };
+    } else if (status === 409) {
+      return { error: message || "A guest with this email already exists. Please use a different email." };
+    } else if (status === 400) {
+      return { error: message || "Validation failed. Please check your input and try again." };
+    } else {
+      return { error: message || "Failed to update guest. Please try again." };
+    }
   }
 }
 
 export default function EditGuestPage() {
   const { guest } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
 
   return (
     <div>
@@ -44,6 +57,13 @@ export default function EditGuestPage() {
         <h1 className="text-3xl font-bold text-gray-900">Edit Guest</h1>
         <p className="mt-2 text-gray-600">Update guest information</p>
       </div>
+
+      {actionData?.error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="font-medium">Error:</p>
+          <p className="text-sm">{actionData.error}</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
         <Form method="post" className="space-y-6">

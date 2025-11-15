@@ -1,7 +1,7 @@
 import { useLoaderData, Link, Form, redirect, useActionData } from "react-router";
 import { userManagementAPI } from "../services/api";
 import { Button } from "../components/Button";
-import { handleAPIError } from "../utils/auth";
+import { handleAPIError, parseAPIError } from "../utils/auth";
 import { requireAdmin } from "../utils/auth";
 
 export async function loader({ params, request }: { params: { id: string }; request: Request }) {
@@ -45,50 +45,16 @@ export async function action({ params, request }: { params: { id: string }; requ
     }
     return { success: true };
   } catch (error) {
-    // Extract error message from the error
-    let errorMessage = "Failed to perform action";
-    if (error instanceof Error) {
-      // Check if it's a validation error with a specific message
-      if ((error as any).message && error.message.includes('API Error:')) {
-        // Extract the actual error message after "API Error: 400 - " or "API Error: 400  - "
-        // Handle both with and without status text
-        const match = error.message.match(/API Error: \d+\s+[^-]*-\s*(.+)/s);
-        if (match && match[1]) {
-          try {
-            // Try to parse as JSON to extract validation message
-            const errorData = JSON.parse(match[1].trim());
-            if (errorData.data && typeof errorData.data === 'object') {
-              // Extract field-specific validation errors
-              const fieldErrors = Object.entries(errorData.data)
-                .map(([field, message]) => {
-                  // Capitalize field name and format message
-                  const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
-                  return `${fieldName}: ${message}`;
-                })
-                .join('. ');
-              errorMessage = fieldErrors || errorData.message || errorMessage;
-            } else {
-              errorMessage = errorData.message || errorMessage;
-            }
-          } catch {
-            // If not JSON, use the message as is
-            errorMessage = match[1].trim();
-          }
-        } else {
-          errorMessage = error.message;
-        }
-      } else {
-        errorMessage = error.message;
-      }
-    }
+    const { status, message } = parseAPIError(error);
     
-    // Don't redirect on validation errors (400), but redirect on other errors
-    if (error instanceof Error && (error as any).status === 400) {
-      return { success: false, error: errorMessage };
+    // Don't redirect on validation errors (400), conflict errors (409), or not found (404)
+    // These should be displayed to the user
+    if (status === 400 || status === 404 || status === 409) {
+      return { success: false, error: message };
     }
     
     handleAPIError(error, request);
-    return { success: false, error: errorMessage };
+    return { success: false, error: message || "Failed to perform action" };
   }
 }
 

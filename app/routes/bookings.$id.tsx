@@ -2,7 +2,7 @@ import { useLoaderData, Link, Form, redirect, useActionData } from "react-router
 import { reservationAPI, invoiceAPI } from "../services/api";
 import { Button } from "../components/Button";
 import { formatDisplayDate, formatDisplayDateTime } from "../utils/dateFormat";
-import { handleAPIError } from "../utils/auth";
+import { handleAPIError, parseAPIError } from "../utils/auth";
 
 export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   try {
@@ -32,9 +32,15 @@ export async function action({ request, params }: { request: Request; params: { 
     }
     return redirect(`/bookings/${params.id}`);
   } catch (error) {
+    const { status, message } = parseAPIError(error);
+    
+    // Don't redirect on validation errors (400) or not found (404) - show error to user
+    if (status === 400 || status === 404) {
+      return { error: message || "Action failed. Please check your input and try again." };
+    }
+    
     handleAPIError(error, request);
-    console.error("Error in booking action:", error);
-    return { error: error instanceof Error ? error.message : "Action failed" };
+    return { error: message || "Action failed. Please try again." };
   }
 }
 
