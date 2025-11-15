@@ -1,8 +1,12 @@
-import { useLoaderData, Link, useNavigate, useRevalidator, useSearchParams, Form } from "react-router";
+import { useLoaderData, Link, useRevalidator, useSearchParams } from "react-router";
 import { roomAPI, roomTypeAPI, type PaginatedResponse } from "../services/api";
 import { Button } from "../components/Button";
 import { RoomKanbanBoard } from "../components/RoomKanbanBoard";
-import { Pagination } from "../components/Pagination";
+import { FilterForm } from "../components/FilterForm";
+import { FilterField } from "../components/FilterField";
+import { DataTable } from "../components/DataTable";
+import { StatusBadge } from "../components/StatusBadge";
+import { useTableSort } from "../hooks/useTableSort";
 import { handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
@@ -54,7 +58,6 @@ export async function loader({ request }: { request: Request }) {
 
 export default function RoomsPage() {
   const { roomsData, roomTypes } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
   const revalidator = useRevalidator();
   const [searchParams] = useSearchParams();
 
@@ -64,39 +67,16 @@ export default function RoomsPage() {
   const totalElements = roomsData.totalElements;
   const pageSize = roomsData.size;
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      READY: "bg-green-100 text-green-800",
-      MAINTENANCE: "bg-yellow-100 text-yellow-800",
-      CLEANING: "bg-blue-100 text-blue-800",
-    };
-    return colors[status] || "bg-gray-100 text-gray-800";
+  const { handleSort, sortBy, sortDir } = useTableSort({ defaultSortDir: "asc" });
+
+  const statusColors: Record<string, string> = {
+    READY: "bg-green-100 text-green-800",
+    MAINTENANCE: "bg-yellow-100 text-yellow-800",
+    CLEANING: "bg-blue-100 text-blue-800",
   };
 
   const handleRoomUpdate = () => {
     revalidator.revalidate();
-  };
-
-  const handleSort = (sortBy: string) => {
-    const params = new URLSearchParams(searchParams);
-    const currentSortBy = params.get("sortBy");
-    const currentSortDir = params.get("sortDir") || "asc";
-    
-    if (currentSortBy === sortBy) {
-      params.set("sortDir", currentSortDir === "asc" ? "desc" : "asc");
-    } else {
-      params.set("sortBy", sortBy);
-      params.set("sortDir", "asc");
-    }
-    params.set("page", "0"); // Reset to first page on sort
-    navigate(`?${params.toString()}`);
-  };
-
-  const getSortIcon = (field: string) => {
-    const sortBy = searchParams.get("sortBy");
-    const sortDir = searchParams.get("sortDir") || "asc";
-    if (sortBy !== field) return "⇅";
-    return sortDir === "asc" ? "↑" : "↓";
   };
 
   return (
@@ -117,175 +97,120 @@ export default function RoomsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <Form method="get" className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-              <input
-                type="text"
-                name="searchTerm"
-                defaultValue={searchParams.get("searchTerm") || ""}
-                placeholder="Room number, description..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
-              <select
-                name="roomTypeId"
-                defaultValue={searchParams.get("roomTypeId") || ""}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All Types</option>
-                {roomTypes.map((rt: any) => (
-                  <option key={rt.id} value={rt.id}>{rt.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                name="status"
-                defaultValue={searchParams.get("status") || ""}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All Statuses</option>
-                <option value="READY">Ready</option>
-                <option value="MAINTENANCE">Maintenance</option>
-                <option value="CLEANING">Cleaning</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Page Size</label>
-              <select
-                name="size"
-                defaultValue={searchParams.get("size") || "10"}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
-            </div>
-            <div className="md:col-span-4 flex gap-2">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Apply Filters
-              </button>
-              <Link
-                to="/rooms"
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                Clear
-              </Link>
-            </div>
-            {/* Preserve other params */}
-            {searchParams.get("sortBy") && <input type="hidden" name="sortBy" value={searchParams.get("sortBy")!} />}
-            {searchParams.get("sortDir") && <input type="hidden" name="sortDir" value={searchParams.get("sortDir")!} />}
-          </Form>
-        </div>
+        <FilterForm clearUrl="/rooms">
+          <FilterField
+            label="Search"
+            name="searchTerm"
+            type="text"
+            defaultValue={searchParams.get("searchTerm") || ""}
+            placeholder="Room number, description..."
+          />
+          <FilterField
+            label="Room Type"
+            name="roomTypeId"
+            type="select"
+            defaultValue={searchParams.get("roomTypeId") || ""}
+            options={[
+              { value: "", label: "All Types" },
+              ...roomTypes.map((rt: any) => ({
+                value: String(rt.id),
+                label: rt.name,
+              })),
+            ]}
+          />
+          <FilterField
+            label="Status"
+            name="status"
+            type="select"
+            defaultValue={searchParams.get("status") || ""}
+            options={[
+              { value: "", label: "All Statuses" },
+              { value: "READY", label: "Ready" },
+              { value: "MAINTENANCE", label: "Maintenance" },
+              { value: "CLEANING", label: "Cleaning" },
+            ]}
+          />
+        </FilterForm>
 
         {/* Table View */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort("roomNumber")}
-              >
-                <div className="flex items-center gap-1">
-                  Room Number {getSortIcon("roomNumber")}
+        <DataTable
+          data={rooms}
+          columns={[
+            {
+              key: "roomNumber",
+              header: "Room Number",
+              sortable: true,
+              render: (room: any) => (
+                <>
+                  <div className="text-sm font-medium text-gray-900">{room.roomNumber}</div>
+                  {room.floor && (
+                    <div className="text-sm text-gray-500">Floor {room.floor}</div>
+                  )}
+                </>
+              ),
+            },
+            {
+              key: "type",
+              header: "Type",
+              render: (room: any) => (
+                <div className="text-sm text-gray-900">
+                  {room.roomType?.name || `Type ${room.roomTypeId}`}
                 </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort("status")}
-              >
-                <div className="flex items-center gap-1">
-                  Status {getSortIcon("status")}
-                </div>
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort("maxOccupancy")}
-              >
-                <div className="flex items-center gap-1">
-                  Max Occupancy {getSortIcon("maxOccupancy")}
-                </div>
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {rooms.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  No rooms found. {searchParams.toString() ? "Try adjusting your filters." : "Create your first room!"}
-                </td>
-              </tr>
-            ) : (
-              rooms.map((room: any) => (
-                <tr key={room.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{room.roomNumber}</div>
-                    {room.floor && (
-                      <div className="text-sm text-gray-500">Floor {room.floor}</div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {room.roomType?.name || `Type ${room.roomTypeId}`}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                        room.status
-                      )}`}
-                    >
-                      {room.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {room.maxOccupancy || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Link
-                      to={`/rooms/${room.id}`}
-                      className="text-blue-600 hover:text-blue-900 mr-4"
-                    >
-                      View
-                    </Link>
-                    <Link
-                      to={`/rooms/${room.id}/edit`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Edit
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalElements={totalElements}
-            pageSize={pageSize}
-          />
-        )}
-      </div>
+              ),
+            },
+            {
+              key: "status",
+              header: "Status",
+              sortable: true,
+              render: (room: any) => (
+                <StatusBadge status={room.status} colorMap={statusColors} />
+              ),
+            },
+            {
+              key: "maxOccupancy",
+              header: "Max Occupancy",
+              sortable: true,
+              render: (room: any) => (
+                <div className="text-sm text-gray-900">{room.maxOccupancy || "N/A"}</div>
+              ),
+            },
+            {
+              key: "actions",
+              header: "Actions",
+              align: "right",
+              render: (room: any) => (
+                <>
+                  <Link
+                    to={`/rooms/${room.id}`}
+                    className="text-blue-600 hover:text-blue-900 mr-4"
+                  >
+                    View
+                  </Link>
+                  <Link
+                    to={`/rooms/${room.id}/edit`}
+                    className="text-indigo-600 hover:text-indigo-900"
+                  >
+                    Edit
+                  </Link>
+                </>
+              ),
+            },
+          ]}
+          pagination={{
+            currentPage,
+            totalPages,
+            totalElements,
+            pageSize,
+          }}
+          emptyMessage={
+            searchParams.toString()
+              ? "No rooms found. Try adjusting your filters."
+              : "No rooms found. Create your first room!"
+          }
+          onSort={handleSort}
+          sortBy={sortBy}
+          sortDir={sortDir}
+        />
       </div>
     </div>
   );

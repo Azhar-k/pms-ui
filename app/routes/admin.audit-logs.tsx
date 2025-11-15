@@ -1,7 +1,9 @@
-import { useLoaderData, useNavigate, useSearchParams, Form, Link } from "react-router";
+import { useLoaderData, useSearchParams } from "react-router";
 import { userManagementAPI, type PaginatedResponse } from "../services/api";
-import { Pagination } from "../components/Pagination";
-import { DateInput } from "../components/DateInput";
+import { FilterForm } from "../components/FilterForm";
+import { FilterField } from "../components/FilterField";
+import { DataTable } from "../components/DataTable";
+import { useTableSort } from "../hooks/useTableSort";
 import { handleAPIError } from "../utils/auth";
 import { requireAdmin } from "../utils/auth";
 
@@ -41,7 +43,6 @@ export async function loader({ request }: { request: Request }) {
 
 export default function AdminAuditLogsPage() {
   const { auditLogsData } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const auditLogs = auditLogsData.content;
@@ -50,27 +51,7 @@ export default function AdminAuditLogsPage() {
   const totalElements = auditLogsData.totalElements;
   const pageSize = auditLogsData.size;
 
-  const handleSort = (sortBy: string) => {
-    const params = new URLSearchParams(searchParams);
-    const currentSortBy = params.get("sortBy");
-    const currentSortDir = params.get("sortDir") || "DESC";
-    
-    if (currentSortBy === sortBy) {
-      params.set("sortDir", currentSortDir === "ASC" ? "DESC" : "ASC");
-    } else {
-      params.set("sortBy", sortBy);
-      params.set("sortDir", "DESC");
-    }
-    params.set("page", "0");
-    navigate(`?${params.toString()}`);
-  };
-
-  const getSortIcon = (field: string) => {
-    const sortBy = searchParams.get("sortBy");
-    const sortDir = searchParams.get("sortDir") || "DESC";
-    if (sortBy !== field) return "⇅";
-    return sortDir === "ASC" ? "↑" : "↓";
-  };
+  const { handleSort, sortBy, sortDir } = useTableSort({ defaultSortDir: "DESC" });
 
   return (
     <div>
@@ -80,148 +61,100 @@ export default function AdminAuditLogsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <Form method="get" className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">User ID</label>
-            <input
-              type="number"
-              name="userId"
-              defaultValue={searchParams.get("userId") || ""}
-              placeholder="Filter by user ID"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
-            <input
-              type="text"
-              name="action"
-              defaultValue={searchParams.get("action") || ""}
-              placeholder="Filter by action"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <DateInput
-            label="Start Date"
-            id="startDate"
-            name="startDate"
-            defaultValue={searchParams.get("startDate") || ""}
-          />
-          <DateInput
-            label="End Date"
-            id="endDate"
-            name="endDate"
-            defaultValue={searchParams.get("endDate") || ""}
-          />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Page Size</label>
-            <select
-              name="size"
-              defaultValue={searchParams.get("size") || "10"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-          </div>
-          <div className="md:col-span-4 flex gap-2">
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Apply Filters
-            </button>
-            <Link
-              to="/admin/audit-logs"
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-            >
-              Clear
-            </Link>
-          </div>
-          {searchParams.get("sortBy") && <input type="hidden" name="sortBy" value={searchParams.get("sortBy")!} />}
-          {searchParams.get("sortDir") && <input type="hidden" name="sortDir" value={searchParams.get("sortDir")!} />}
-        </Form>
-      </div>
+      <FilterForm clearUrl="/admin/audit-logs">
+        <FilterField
+          label="User ID"
+          name="userId"
+          type="number"
+          defaultValue={searchParams.get("userId") || ""}
+          placeholder="Filter by user ID"
+        />
+        <FilterField
+          label="Action"
+          name="action"
+          type="text"
+          defaultValue={searchParams.get("action") || ""}
+          placeholder="Filter by action"
+        />
+        <FilterField
+          label="Start Date"
+          name="startDate"
+          type="date"
+          defaultValue={searchParams.get("startDate") || ""}
+        />
+        <FilterField
+          label="End Date"
+          name="endDate"
+          type="date"
+          defaultValue={searchParams.get("endDate") || ""}
+        />
+      </FilterForm>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User ID
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort("action")}
-              >
-                <div className="flex items-center gap-1">
-                  Action {getSortIcon("action")}
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Details
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                IP Address
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort("timestamp")}
-              >
-                <div className="flex items-center gap-1">
-                  Timestamp {getSortIcon("timestamp")}
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {auditLogs.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                  No audit logs found. {searchParams.toString() ? "Try adjusting your filters." : ""}
-                </td>
-              </tr>
-            ) : (
-              auditLogs.map((log: any) => (
-                <tr key={log.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.userId || "-"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{log.action}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 max-w-md truncate">{log.details || "-"}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.ipAddress || "-"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.timestamp ? new Date(log.timestamp).toLocaleString() : "-"}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalElements={totalElements}
-            pageSize={pageSize}
-          />
-        )}
-      </div>
+      <DataTable
+        data={auditLogs}
+        columns={[
+          {
+            key: "id",
+            header: "ID",
+            render: (log: any) => (
+              <div className="text-sm text-gray-900">{log.id}</div>
+            ),
+          },
+          {
+            key: "userId",
+            header: "User ID",
+            render: (log: any) => (
+              <div className="text-sm text-gray-900">{log.userId || "-"}</div>
+            ),
+          },
+          {
+            key: "action",
+            header: "Action",
+            sortable: true,
+            render: (log: any) => (
+              <div className="text-sm font-medium text-gray-900">{log.action}</div>
+            ),
+          },
+          {
+            key: "details",
+            header: "Details",
+            render: (log: any) => (
+              <div className="text-sm text-gray-900 max-w-md truncate">{log.details || "-"}</div>
+            ),
+          },
+          {
+            key: "ipAddress",
+            header: "IP Address",
+            render: (log: any) => (
+              <div className="text-sm text-gray-900">{log.ipAddress || "-"}</div>
+            ),
+          },
+          {
+            key: "timestamp",
+            header: "Timestamp",
+            sortable: true,
+            render: (log: any) => (
+              <div className="text-sm text-gray-900">
+                {log.timestamp ? new Date(log.timestamp).toLocaleString() : "-"}
+              </div>
+            ),
+          },
+        ]}
+        pagination={{
+          currentPage,
+          totalPages,
+          totalElements,
+          pageSize,
+        }}
+        emptyMessage={
+          searchParams.toString()
+            ? "No audit logs found. Try adjusting your filters."
+            : "No audit logs found."
+        }
+        onSort={handleSort}
+        sortBy={sortBy}
+        sortDir={sortDir}
+      />
     </div>
   );
 }
