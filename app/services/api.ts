@@ -44,18 +44,10 @@ async function fetchAPI<T>(
   }
   
   try {
-    // Debug: Log the actual HTTP request
-    console.log("API - fetchAPI - Full request URL:", url);
-    console.log("API - fetchAPI - Request method:", options.method || "GET");
-    
     const response = await fetch(url, {
       ...options,
       headers,
     });
-
-    // Debug: Log response
-    console.log("API - fetchAPI - Response status:", response.status);
-    console.log("API - fetchAPI - Response URL:", response.url);
 
     // Handle 204 No Content
     if (response.status === 204) {
@@ -293,10 +285,7 @@ export const reservationAPI = {
     searchTerm?: string;
   }, request?: Request) => {
     const queryString = params ? buildQueryString(params) : '';
-    const fullUrl = `/reservations${queryString}`;
-    console.log("API - reservationAPI.getAll - Request URL:", fullUrl);
-    console.log("API - reservationAPI.getAll - Params sent:", params);
-    return fetchAPI<PaginatedResponse<any>>(fullUrl, {}, request);
+    return fetchAPI<PaginatedResponse<any>>(`/reservations${queryString}`, {}, request);
   },
   getById: (id: number, request?: Request) => fetchAPI<any>(`/reservations/${id}`, {}, request),
   getByNumber: (reservationNumber: string, request?: Request) => fetchAPI<any>(`/reservations/number/${reservationNumber}`, {}, request),

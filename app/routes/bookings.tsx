@@ -11,11 +11,6 @@ import { handleAPIError } from "../utils/auth";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
-  
-  // Debug: Log incoming URL params
-  console.log("Loader - Incoming URL:", request.url);
-  console.log("Loader - URL search params:", Object.fromEntries(url.searchParams.entries()));
-  
   const searchParams = {
     page: parseInt(url.searchParams.get("page") || "0"),
     size: parseInt(url.searchParams.get("size") || "10"),
@@ -36,17 +31,8 @@ export async function loader({ request }: { request: Request }) {
     searchTerm: url.searchParams.get("searchTerm") || undefined,
   };
 
-  // Debug: Log processed search params
-  console.log("Loader - Processed search params:", searchParams);
-
   try {
     const reservationsResponse = await reservationAPI.getAll(searchParams, request);
-    
-    // Debug: Log API response
-    console.log("Loader - API response:", {
-      totalElements: Array.isArray(reservationsResponse) ? reservationsResponse.length : reservationsResponse?.totalElements,
-      contentLength: Array.isArray(reservationsResponse) ? reservationsResponse.length : reservationsResponse?.content?.length,
-    });
 
     // Handle both paginated response and array response for backward compatibility
     const reservationsData: PaginatedResponse<any> = Array.isArray(reservationsResponse) 

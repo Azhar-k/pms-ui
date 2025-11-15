@@ -26,12 +26,6 @@ export function FilterForm({
     // Collect all form data
     const formData = new FormData(form);
     
-    // Debug: Log form data to console
-    console.log("Form submission - FormData entries:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`  ${key}: ${value}`);
-    }
-    
     // Build URLSearchParams - only include non-empty values
     // Empty date fields will be excluded, effectively removing them from the URL
     const params = new URLSearchParams();
@@ -42,10 +36,6 @@ export function FilterForm({
         params.append(key, stringValue);
       }
     });
-
-    // Debug: Log final params
-    console.log("Final URL params:", params.toString());
-    console.log("Final URL:", `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`);
 
     // Navigate to the same path with new search params
     const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
