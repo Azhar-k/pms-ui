@@ -45,6 +45,26 @@ export function FilterField({
     );
   }
 
+  if (type === "datetime-local") {
+    return (
+      <div>
+        <label
+          htmlFor={fieldId}
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {label}
+        </label>
+        <input
+          type="datetime-local"
+          id={fieldId}
+          name={name}
+          defaultValue={defaultValue || ""}
+          className={`${baseInputClasses} ${className}`}
+        />
+      </div>
+    );
+  }
+
   if (type === "select") {
     return (
       <div>

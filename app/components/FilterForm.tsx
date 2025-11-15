@@ -1,4 +1,4 @@
-import { Form, Link, useSearchParams } from "react-router";
+import { Link, useSearchParams, useNavigate } from "react-router";
 
 interface FilterFormProps {
   children: React.ReactNode;
@@ -17,10 +17,48 @@ export function FilterForm({
   className = "",
 }: FilterFormProps) {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+
+    // Collect all form data
+    const formData = new FormData(form);
+    
+    // Debug: Log form data to console
+    console.log("Form submission - FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`  ${key}: ${value}`);
+    }
+    
+    // Build URLSearchParams - only include non-empty values
+    // Empty date fields will be excluded, effectively removing them from the URL
+    const params = new URLSearchParams();
+    formData.forEach((value, key) => {
+      const stringValue = value as string;
+      // Only include non-empty values
+      if (stringValue.trim() !== "") {
+        params.append(key, stringValue);
+      }
+    });
+
+    // Debug: Log final params
+    console.log("Final URL params:", params.toString());
+    console.log("Final URL:", `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`);
+
+    // Navigate to the same path with new search params
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+    navigate(newUrl);
+  };
 
   return (
     <div className={`bg-white rounded-lg shadow p-4 mb-6 ${className}`}>
-      <Form method="get" className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <form
+        method="get"
+        className="grid grid-cols-1 md:grid-cols-4 gap-4"
+        onSubmit={handleSubmit}
+      >
         {children}
         
         {showPageSize && (
@@ -63,7 +101,7 @@ export function FilterForm({
         {searchParams.get("sortDir") && (
           <input type="hidden" name="sortDir" value={searchParams.get("sortDir")!} />
         )}
-      </Form>
+      </form>
     </div>
   );
 }

@@ -110,25 +110,25 @@ export default function InvoicesPage() {
         <FilterField
           label="Issued Date From"
           name="issuedDateFrom"
-          type="datetime-local"
+          type="date"
           defaultValue={searchParams.get("issuedDateFrom") || ""}
         />
         <FilterField
           label="Issued Date To"
           name="issuedDateTo"
-          type="datetime-local"
+          type="date"
           defaultValue={searchParams.get("issuedDateTo") || ""}
         />
         <FilterField
           label="Due Date From"
           name="dueDateFrom"
-          type="datetime-local"
+          type="date"
           defaultValue={searchParams.get("dueDateFrom") || ""}
         />
         <FilterField
           label="Due Date To"
           name="dueDateTo"
-          type="datetime-local"
+          type="date"
           defaultValue={searchParams.get("dueDateTo") || ""}
         />
         <FilterField
