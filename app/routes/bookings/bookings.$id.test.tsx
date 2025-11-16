@@ -95,7 +95,7 @@ describe("BookingDetailPage", () => {
       const result = await loader({ params: { id: "1" }, request: new Request("http://localhost/bookings/1"), context: {} } as any);
 
       expect(result.reservation).toEqual(mockReservation);
-      expect(reservationAPI.getById).toHaveBeenCalledWith(1);
+      expect(reservationAPI.getById).toHaveBeenCalledWith(1, expect.any(Request));
     });
 
     it("should throw 404 when booking not found", async () => {
@@ -385,7 +385,7 @@ describe("BookingDetailPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(reservationAPI.checkIn).toHaveBeenCalledWith(1);
+      expect(reservationAPI.checkIn).toHaveBeenCalledWith(1, expect.any(Request));
       expect(result).toHaveProperty("status", 302);
       expect(result.headers.get("Location")).toBe("/bookings/1");
     });
@@ -403,7 +403,7 @@ describe("BookingDetailPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(reservationAPI.checkOut).toHaveBeenCalledWith(1);
+      expect(reservationAPI.checkOut).toHaveBeenCalledWith(1, expect.any(Request));
       expect(result).toHaveProperty("status", 302);
     });
 
@@ -420,7 +420,7 @@ describe("BookingDetailPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(reservationAPI.cancel).toHaveBeenCalledWith(1);
+      expect(reservationAPI.cancel).toHaveBeenCalledWith(1, expect.any(Request));
       expect(result).toHaveProperty("status", 302);
     });
 
@@ -437,13 +437,14 @@ describe("BookingDetailPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(invoiceAPI.generate).toHaveBeenCalledWith(1);
+      expect(invoiceAPI.generate).toHaveBeenCalledWith(1, expect.any(Request));
       expect(result).toHaveProperty("status", 302);
       expect(result.headers.get("Location")).toBe("/invoices/1");
     });
 
     it("should return error on API failure", async () => {
-      vi.mocked(reservationAPI.checkIn).mockRejectedValue(new Error("API Error"));
+      // Mock a 400 error (validation error) so the action returns an error instead of throwing
+      vi.mocked(reservationAPI.checkIn).mockRejectedValue(new Error("API Error: 400 Bad Request - Action failed"));
 
       const formData = new FormData();
       formData.append("action", "checkIn");
@@ -455,7 +456,8 @@ describe("BookingDetailPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(result).toEqual({ error: "API Error" });
+      // parseAPIError extracts "Action failed" from "API Error: 400 Bad Request - Action failed"
+      expect(result).toEqual({ error: "Action failed" });
     });
   });
 });

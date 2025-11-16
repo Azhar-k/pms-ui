@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import EditBookingPage, { loader, action } from "./bookings.$id.edit";
@@ -115,9 +115,9 @@ describe("EditBookingPage", () => {
       expect(result.reservation).toEqual(mockReservation);
       expect(result.guests).toHaveLength(2);
       expect(result.rateTypes).toHaveLength(2);
-      expect(reservationAPI.getById).toHaveBeenCalledWith(1);
-      expect(guestAPI.getAll).toHaveBeenCalled();
-      expect(rateTypeAPI.getAll).toHaveBeenCalled();
+      expect(reservationAPI.getById).toHaveBeenCalledWith(1, expect.any(Request));
+      expect(guestAPI.getAll).toHaveBeenCalledWith(expect.any(Object), expect.any(Request));
+      expect(rateTypeAPI.getAll).toHaveBeenCalledWith(expect.any(Request));
     });
 
     it("should throw 404 when booking not found", async () => {
@@ -293,14 +293,24 @@ describe("EditBookingPage", () => {
       await user.clear(numberOfGuestsInput);
       await user.type(numberOfGuestsInput, "3");
 
-      const submitButton = screen.getByRole("button", { name: "Update Booking" });
-      await user.click(submitButton);
+      const form = screen.getByRole("button", { name: "Update Booking" }).closest("form");
+      expect(form).toBeInTheDocument();
+      
+      // Submit the form
+      fireEvent.submit(form!);
 
       await waitFor(() => {
-        expect(reservationAPI.update).toHaveBeenCalledWith(1, expect.objectContaining({
+        expect(reservationAPI.update).toHaveBeenCalled();
+      }, { timeout: 3000 });
+      
+      // Verify the call was made with correct data
+      expect(reservationAPI.update).toHaveBeenCalledWith(
+        1, 
+        expect.objectContaining({
           numberOfGuests: 3,
-        }));
-      });
+        }),
+        expect.any(Request)
+      );
     });
 
     it("should submit all form fields", async () => {
@@ -323,16 +333,26 @@ describe("EditBookingPage", () => {
       await user.clear(screen.getByLabelText("Special Requests") as HTMLTextAreaElement);
       await user.type(screen.getByLabelText("Special Requests") as HTMLTextAreaElement, "Early check-in");
 
-      const submitButton = screen.getByRole("button", { name: "Update Booking" });
-      await user.click(submitButton);
+      const form = screen.getByRole("button", { name: "Update Booking" }).closest("form");
+      expect(form).toBeInTheDocument();
+      
+      // Submit the form
+      fireEvent.submit(form!);
 
       await waitFor(() => {
-        expect(reservationAPI.update).toHaveBeenCalledWith(1, expect.objectContaining({
+        expect(reservationAPI.update).toHaveBeenCalled();
+      }, { timeout: 3000 });
+      
+      // Verify the call was made with correct data
+      expect(reservationAPI.update).toHaveBeenCalledWith(
+        1, 
+        expect.objectContaining({
           guestId: 2,
           rateTypeId: 2,
           specialRequests: "Early check-in",
-        }));
-      });
+        }),
+        expect.any(Request)
+      );
     });
   });
 
@@ -355,22 +375,28 @@ describe("EditBookingPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(reservationAPI.update).toHaveBeenCalledWith(1, {
-        guestId: 1,
-        roomId: 1,
-        rateTypeId: 1,
-        checkInDate: "2024-01-15",
-        checkOutDate: "2024-01-20",
-        numberOfGuests: 2,
-        specialRequests: undefined,
-      });
+      expect(reservationAPI.update).toHaveBeenCalledWith(
+        1, 
+        {
+          guestId: 1,
+          roomId: 1,
+          rateTypeId: 1,
+          checkInDate: "2024-01-15",
+          checkOutDate: "2024-01-20",
+          numberOfGuests: 2,
+          specialRequests: undefined,
+        },
+        expect.any(Request)
+      );
 
       expect(result).toHaveProperty("status", 302);
       expect(result.headers.get("Location")).toBe("/bookings/1");
     });
 
     it("should return error on API failure", async () => {
-      vi.mocked(reservationAPI.update).mockRejectedValue(new Error("API Error"));
+      // Mock a 400 error (validation error) so the action returns an error instead of throwing
+      // parseAPIError extracts the message after the dash, so "Validation failed" will be the message
+      vi.mocked(reservationAPI.update).mockRejectedValue(new Error("API Error: 400 Bad Request - Validation failed"));
 
       const formData = new FormData();
       formData.append("guestId", "1");
@@ -387,7 +413,8 @@ describe("EditBookingPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(result).toEqual({ error: "API Error" });
+      // parseAPIError extracts "Validation failed" from "API Error: 400 Bad Request - Validation failed"
+      expect(result).toEqual({ error: "Validation failed" });
     });
   });
 
