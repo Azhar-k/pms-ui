@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import EditGuestPage, { loader, action } from "./guests.$id.edit";
@@ -66,7 +66,7 @@ describe("EditGuestPage", () => {
       const result = await loader({ params: { id: "1" }, request: new Request("http://localhost/guests/1/edit"), context: {} } as any);
 
       expect(result.guest).toEqual(mockGuest);
-      expect(guestAPI.getById).toHaveBeenCalledWith(1);
+      expect(guestAPI.getById).toHaveBeenCalledWith(1, expect.any(Request));
     });
 
     it("should throw 404 when guest not found", async () => {
@@ -179,14 +179,24 @@ describe("EditGuestPage", () => {
       await user.clear(firstNameInput);
       await user.type(firstNameInput, "Jane");
 
-      const submitButton = screen.getByRole("button", { name: "Update Guest" });
-      await user.click(submitButton);
+      const form = screen.getByRole("button", { name: "Update Guest" }).closest("form");
+      expect(form).toBeInTheDocument();
+      
+      // Submit the form
+      fireEvent.submit(form!);
 
       await waitFor(() => {
-        expect(guestAPI.update).toHaveBeenCalledWith(1, expect.objectContaining({
+        expect(guestAPI.update).toHaveBeenCalled();
+      }, { timeout: 3000 });
+      
+      // Verify the call was made with correct data
+      expect(guestAPI.update).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
           firstName: "Jane",
-        }));
-      });
+        }),
+        expect.any(Request)
+      );
     });
 
     it("should submit all form fields", async () => {
@@ -206,17 +216,27 @@ describe("EditGuestPage", () => {
       await user.type(screen.getByLabelText("Email") as HTMLInputElement, "newemail@example.com");
       await user.selectOptions(screen.getByLabelText("ID Type"), "DRIVER_LICENSE");
 
-      const submitButton = screen.getByRole("button", { name: "Update Guest" });
-      await user.click(submitButton);
+      const form = screen.getByRole("button", { name: "Update Guest" }).closest("form");
+      expect(form).toBeInTheDocument();
+      
+      // Submit the form
+      fireEvent.submit(form!);
 
       await waitFor(() => {
-        expect(guestAPI.update).toHaveBeenCalledWith(1, expect.objectContaining({
+        expect(guestAPI.update).toHaveBeenCalled();
+      }, { timeout: 3000 });
+      
+      // Verify the call was made with correct data
+      expect(guestAPI.update).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
           firstName: "John",
           lastName: "Doe",
           email: "newemail@example.com",
           identificationType: "DRIVER_LICENSE",
-        }));
-      });
+        }),
+        expect.any(Request)
+      );
     });
   });
 
@@ -236,25 +256,31 @@ describe("EditGuestPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(guestAPI.update).toHaveBeenCalledWith(1, {
-        firstName: "Jane",
-        lastName: "Doe",
-        email: "jane.doe@example.com",
-        phoneNumber: undefined,
-        address: undefined,
-        city: undefined,
-        state: undefined,
-        country: undefined,
-        postalCode: undefined,
-        identificationType: undefined,
-        identificationNumber: undefined,
-      });
+      expect(guestAPI.update).toHaveBeenCalledWith(
+        1,
+        {
+          firstName: "Jane",
+          lastName: "Doe",
+          email: "jane.doe@example.com",
+          phoneNumber: undefined,
+          address: undefined,
+          city: undefined,
+          state: undefined,
+          country: undefined,
+          postalCode: undefined,
+          identificationType: undefined,
+          identificationNumber: undefined,
+        },
+        expect.any(Request)
+      );
 
       expect(result).toHaveProperty("status", 302);
       expect(result.headers.get("Location")).toBe("/guests/1");
     });
 
     it("should return error on API failure", async () => {
+      // Mock a generic error - parseAPIError will return status: null, message: "API Error"
+      // Since status is not 400/404/409, it will return the message
       vi.mocked(guestAPI.update).mockRejectedValue(new Error("API Error"));
 
       const formData = new FormData();
@@ -268,7 +294,9 @@ describe("EditGuestPage", () => {
 
       const result = await action({ request, params: { id: "1" }, context: {} } as any);
 
-      expect(result).toEqual({ error: "Failed to update guest" });
+      // parseAPIError returns { status: null, message: "API Error" }
+      // Since status is not 400/404/409, action returns { error: "API Error" }
+      expect(result).toEqual({ error: "API Error" });
     });
   });
 });

@@ -63,7 +63,7 @@ describe("GuestDetailPage", () => {
       const result = await loader({ params: { id: "1" }, request: new Request("http://localhost/guests/1"), context: {} } as any);
 
       expect(result.guest).toEqual(mockGuest);
-      expect(guestAPI.getById).toHaveBeenCalledWith(1);
+      expect(guestAPI.getById).toHaveBeenCalledWith(1, expect.any(Request));
     });
 
     it("should throw 404 when guest not found", async () => {
