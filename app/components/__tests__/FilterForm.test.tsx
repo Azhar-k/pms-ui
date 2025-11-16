@@ -1,10 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { FilterForm } from "../FilterForm";
 
 describe("FilterForm", () => {
+  beforeEach(() => {
+    // Mock window.location for tests
+    delete (window as any).location;
+    (window as any).location = {
+      pathname: "/test",
+      href: "http://localhost/test",
+      search: "",
+    };
+  });
+
   const createRouter = (initialEntries = ["/test"]) => {
     return createMemoryRouter(
       [
@@ -37,16 +47,21 @@ describe("FilterForm", () => {
     });
 
     it("should not render page size selector when showPageSize is false", () => {
-      const router = createMemoryRouter([
+      const router = createMemoryRouter(
+        [
+          {
+            path: "/test",
+            element: (
+              <FilterForm clearUrl="/test" showPageSize={false}>
+                <input name="search" placeholder="Search" />
+              </FilterForm>
+            ),
+          },
+        ],
         {
-          path: "/test",
-          element: (
-            <FilterForm clearUrl="/test" showPageSize={false}>
-              <input name="search" placeholder="Search" />
-            </FilterForm>
-          ),
-        },
-      ]);
+          initialEntries: ["/test"],
+        }
+      );
       render(<RouterProvider router={router} />);
       expect(screen.queryByLabelText("Page Size")).not.toBeInTheDocument();
     });
@@ -118,19 +133,39 @@ describe("FilterForm", () => {
       expect(sortDirInput.value).toBe("asc");
     });
 
-    it("should apply custom className", () => {
-      const router = createMemoryRouter([
+    it("should apply custom className", async () => {
+      const router = createMemoryRouter(
+        [
+          {
+            path: "/test",
+            element: (
+              <FilterForm clearUrl="/test" className="custom-class">
+                <input name="search" placeholder="Search" />
+              </FilterForm>
+            ),
+          },
+        ],
         {
-          path: "/test",
-          element: (
-            <FilterForm clearUrl="/test" className="custom-class">
-              <input name="search" placeholder="Search" />
-            </FilterForm>
-          ),
-        },
-      ]);
+          initialEntries: ["/test"],
+        }
+      );
       render(<RouterProvider router={router} />);
-      const formContainer = screen.getByPlaceholderText("Search").closest("div")?.parentElement;
+      
+      // Wait for router to initialize and component to render
+      await waitFor(
+        () => {
+          expect(router.state.location.pathname).toBe("/test");
+          expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+      
+      // The className is on the outer div, which contains the form
+      // Structure: div (with className) > form > input
+      const searchInput = screen.getByPlaceholderText("Search");
+      const form = searchInput.closest("form");
+      const formContainer = form?.parentElement;
+      expect(formContainer).toBeInTheDocument();
       expect(formContainer).toHaveClass("custom-class");
     });
   });
@@ -144,11 +179,15 @@ describe("FilterForm", () => {
       const searchInput = screen.getByPlaceholderText("Search");
       await user.type(searchInput, "test query");
 
-      const form = screen.getByPlaceholderText("Search").closest("form");
+      // Update window.location.pathname to match router location
+      (window as any).location.pathname = router.state.location.pathname;
+
       await user.click(screen.getByText("Apply Filters"));
 
       await waitFor(() => {
         expect(router.state.location.search).toContain("search=test+query");
+        // Update window.location to match router state
+        (window as any).location.pathname = router.state.location.pathname;
       });
     });
 
@@ -160,29 +199,50 @@ describe("FilterForm", () => {
       const searchInput = screen.getByPlaceholderText("Search");
       await user.type(searchInput, "   "); // Only whitespace
 
-      const form = screen.getByPlaceholderText("Search").closest("form");
+      // Update window.location.pathname to match router location
+      (window as any).location.pathname = router.state.location.pathname;
+
       await user.click(screen.getByText("Apply Filters"));
 
       await waitFor(() => {
         // Empty values should be excluded
         expect(router.state.location.search).not.toContain("search=");
+        // Update window.location to match router state
+        (window as any).location.pathname = router.state.location.pathname;
       });
     });
 
     it("should include multiple form fields", async () => {
       const user = userEvent.setup();
-      const router = createMemoryRouter([
+      const router = createMemoryRouter(
+        [
+          {
+            path: "/test",
+            element: (
+              <FilterForm clearUrl="/test">
+                <input name="search" placeholder="Search" />
+                <input name="email" placeholder="Email" />
+              </FilterForm>
+            ),
+          },
+        ],
         {
-          path: "/test",
-          element: (
-            <FilterForm clearUrl="/test">
-              <input name="search" placeholder="Search" />
-              <input name="email" placeholder="Email" />
-            </FilterForm>
-          ),
-        },
-      ]);
+          initialEntries: ["/test"],
+        }
+      );
       render(<RouterProvider router={router} />);
+
+      // Wait for router to initialize and component to render
+      await waitFor(
+        () => {
+          expect(router.state.location.pathname).toBe("/test");
+          expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      // Update window.location.pathname to match router location
+      (window as any).location.pathname = router.state.location.pathname;
 
       await user.type(screen.getByPlaceholderText("Search"), "test");
       await user.type(screen.getByPlaceholderText("Email"), "test@example.com");
@@ -192,6 +252,8 @@ describe("FilterForm", () => {
       await waitFor(() => {
         expect(router.state.location.search).toContain("search=test");
         expect(router.state.location.search).toContain("email=test%40example.com");
+        // Update window.location to match router state
+        (window as any).location.pathname = router.state.location.pathname;
       });
     });
   });

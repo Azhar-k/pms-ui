@@ -14,19 +14,22 @@ describe("DateInput", () => {
   describe("Rendering", () => {
     it("should render date input", () => {
       render(<DateInput id="test-date" name="testDate" />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
+      const input = document.querySelector('input[type="date"][name="testDate"]') as HTMLInputElement;
       expect(input).toBeInTheDocument();
       expect(input.type).toBe("date");
+      expect(input.id).toBe("test-date");
     });
 
     it("should render label when provided", () => {
       render(<DateInput id="test-date" name="testDate" label="Check-in Date" />);
       expect(screen.getByLabelText("Check-in Date")).toBeInTheDocument();
+      const input = screen.getByLabelText("Check-in Date") as HTMLInputElement;
+      expect(input.type).toBe("date");
     });
 
     it("should not render label when not provided", () => {
       render(<DateInput id="test-date" name="testDate" />);
-      const input = screen.getByRole("textbox");
+      const input = document.querySelector('input[type="date"][name="testDate"]') as HTMLInputElement;
       expect(input).toBeInTheDocument();
       expect(screen.queryByText("Check-in Date")).not.toBeInTheDocument();
     });
@@ -39,7 +42,7 @@ describe("DateInput", () => {
           defaultValue="2024-01-15"
         />
       );
-      const input = screen.getByRole("textbox") as HTMLInputElement;
+      const input = document.querySelector('input[type="date"][name="testDate"]') as HTMLInputElement;
       expect(input.value).toBe("2024-01-15");
     });
 
@@ -51,7 +54,7 @@ describe("DateInput", () => {
           className="custom-class"
         />
       );
-      const input = screen.getByRole("textbox");
+      const input = document.querySelector('input[type="date"][name="testDate"]') as HTMLInputElement;
       expect(input).toHaveClass("custom-class");
     });
 

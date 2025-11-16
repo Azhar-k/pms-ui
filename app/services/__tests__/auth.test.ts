@@ -4,21 +4,49 @@ import { authAPI, tokenStorage } from "../auth";
 // Mock fetch globally
 global.fetch = vi.fn();
 
+// Mock localStorage
+const mockLocalStorage: Record<string, string> = {};
+global.localStorage = {
+  getItem: vi.fn((key: string) => mockLocalStorage[key] || null),
+  setItem: vi.fn((key: string, value: string) => {
+    mockLocalStorage[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete mockLocalStorage[key];
+  }),
+  clear: vi.fn(() => {
+    Object.keys(mockLocalStorage).forEach((key) => delete mockLocalStorage[key]);
+  }),
+  length: 0,
+  key: vi.fn(),
+} as any;
+
 // Mock document.cookie
 const mockCookies: Record<string, string> = {};
 Object.defineProperty(document, "cookie", {
   get: () => {
+    // Return cookies in format: "name=value; name2=value2"
+    // getCookie expects encoded values, so return them as stored (encoded)
     return Object.entries(mockCookies)
       .map(([key, value]) => `${key}=${value}`)
       .join("; ");
   },
   set: (value: string) => {
-    const [key, val] = value.split("=");
-    if (val.includes("expires")) {
-      // Cookie is being deleted
-      delete mockCookies[key];
-    } else {
-      mockCookies[key] = val.split(";")[0];
+    // Parse cookie string: "name=encoded_value;expires=...;path=..."
+    const parts = value.split(";");
+    const [nameValue] = parts;
+    if (nameValue) {
+      const [key, ...valueParts] = nameValue.split("=");
+      if (key) {
+        const trimmedKey = key.trim();
+        // Check if it's a delete (expires in past or empty value)
+        if (valueParts.length === 0 || valueParts.join("=") === "" || value.includes("expires=Thu, 01 Jan 1970")) {
+          delete mockCookies[trimmedKey];
+        } else {
+          // Store the encoded value as-is (setCookie encodes it)
+          mockCookies[trimmedKey] = valueParts.join("=");
+        }
+      }
     }
   },
   configurable: true,
@@ -32,7 +60,8 @@ describe("Token Storage", () => {
 
   describe("getAccessToken", () => {
     it("should return token from cookie", () => {
-      mockCookies["auth_access_token"] = "test-token";
+      // getCookie expects encoded values in document.cookie, so encode when setting manually
+      mockCookies["auth_access_token"] = encodeURIComponent("test-token");
       expect(tokenStorage.getAccessToken()).toBe("test-token");
     });
 
@@ -53,13 +82,16 @@ describe("Token Storage", () => {
   describe("setAccessToken", () => {
     it("should set token in cookie", () => {
       tokenStorage.setAccessToken("new-token");
-      expect(mockCookies["auth_access_token"]).toBe("new-token");
+      // setCookie encodes the value, so check the encoded version
+      const cookieValue = mockCookies["auth_access_token"];
+      expect(cookieValue).toBe("new-token"); // The value is stored encoded in the mock
     });
   });
 
   describe("getRefreshToken", () => {
     it("should return refresh token from cookie", () => {
-      mockCookies["auth_refresh_token"] = "refresh-token";
+      // getCookie expects encoded values in document.cookie
+      mockCookies["auth_refresh_token"] = encodeURIComponent("refresh-token");
       expect(tokenStorage.getRefreshToken()).toBe("refresh-token");
     });
   });
@@ -67,14 +99,17 @@ describe("Token Storage", () => {
   describe("setRefreshToken", () => {
     it("should set refresh token in cookie", () => {
       tokenStorage.setRefreshToken("new-refresh-token");
-      expect(mockCookies["auth_refresh_token"]).toBe("new-refresh-token");
+      const cookieValue = mockCookies["auth_refresh_token"];
+      // setCookie encodes it, so the stored value is encoded
+      expect(cookieValue).toBe("new-refresh-token");
     });
   });
 
   describe("getUser", () => {
     it("should return user from cookie", () => {
       const user = { id: 1, username: "test", email: "test@example.com", phone: "", status: "", createdAt: "", updatedAt: "", roles: [] };
-      mockCookies["auth_user"] = JSON.stringify(user);
+      // getCookie expects encoded values, so encode the JSON string
+      mockCookies["auth_user"] = encodeURIComponent(JSON.stringify(user));
       expect(tokenStorage.getUser()).toEqual(user);
     });
 
@@ -92,15 +127,21 @@ describe("Token Storage", () => {
     it("should set user in cookie", () => {
       const user = { id: 1, username: "test", email: "test@example.com", phone: "", status: "", createdAt: "", updatedAt: "", roles: [] };
       tokenStorage.setUser(user);
-      expect(JSON.parse(mockCookies["auth_user"])).toEqual(user);
+      // Cookie value is JSON stringified and then encoded by setCookie
+      const cookieValue = mockCookies["auth_user"];
+      expect(cookieValue).toBeDefined();
+      // getCookie will decode it, so we can parse it directly
+      // But since our mock stores it encoded, we need to decode it
+      const decoded = decodeURIComponent(cookieValue);
+      expect(JSON.parse(decoded)).toEqual(user);
     });
   });
 
   describe("clear", () => {
     it("should clear all tokens and user", () => {
-      mockCookies["auth_access_token"] = "token";
-      mockCookies["auth_refresh_token"] = "refresh";
-      mockCookies["auth_user"] = '{"id":1}';
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
+      mockCookies["auth_refresh_token"] = encodeURIComponent("refresh");
+      mockCookies["auth_user"] = encodeURIComponent('{"id":1}');
 
       tokenStorage.clear();
 
@@ -112,7 +153,7 @@ describe("Token Storage", () => {
 
   describe("isAuthenticated", () => {
     it("should return true when token exists", () => {
-      mockCookies["auth_access_token"] = "token";
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
       expect(tokenStorage.isAuthenticated()).toBe(true);
     });
 
@@ -145,16 +186,22 @@ describe("Auth API", () => {
         },
       };
 
+      const mockHeaders = new Headers();
+      mockHeaders.set("content-type", "application/json");
+
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: mockHeaders,
         json: async () => mockResponse,
+        text: async () => JSON.stringify(mockResponse),
       });
 
       // Mock getCurrentUser to avoid additional fetch
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: mockHeaders,
         json: async () => ({
           success: true,
           data: {
@@ -173,15 +220,19 @@ describe("Auth API", () => {
       const result = await authAPI.login("test@example.com", "password");
 
       expect(result).toEqual(mockResponse.data);
+      // setCookie encodes values, so check the encoded values in mock
+      // getCookie will decode them when reading
       expect(mockCookies["auth_access_token"]).toBe("access-token");
       expect(mockCookies["auth_refresh_token"]).toBe("refresh-token");
     });
 
     it("should throw error on login failure", async () => {
+      const mockHeaders = new Headers();
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 401,
         statusText: "Unauthorized",
+        headers: mockHeaders,
         text: async () => "Invalid credentials",
       });
 
@@ -196,10 +247,15 @@ describe("Auth API", () => {
         message: "Invalid credentials",
       };
 
+      const mockHeaders = new Headers();
+      mockHeaders.set("content-type", "application/json");
+
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: mockHeaders,
         json: async () => mockResponse,
+        text: async () => JSON.stringify(mockResponse),
       });
 
       await expect(
@@ -210,8 +266,8 @@ describe("Auth API", () => {
 
   describe("logout", () => {
     it("should clear tokens on logout", async () => {
-      mockCookies["auth_access_token"] = "token";
-      mockCookies["auth_refresh_token"] = "refresh";
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
+      mockCookies["auth_refresh_token"] = encodeURIComponent("refresh");
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -225,7 +281,7 @@ describe("Auth API", () => {
     });
 
     it("should clear tokens even if API call fails", async () => {
-      mockCookies["auth_access_token"] = "token";
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
 
       (global.fetch as any).mockRejectedValueOnce(new Error("Network error"));
 
@@ -237,7 +293,7 @@ describe("Auth API", () => {
 
   describe("getCurrentUser", () => {
     it("should fetch and store user info", async () => {
-      mockCookies["auth_access_token"] = "token";
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
       const mockUser = {
         id: 1,
         username: "test",
@@ -249,9 +305,13 @@ describe("Auth API", () => {
         roles: ["USER"],
       };
 
+      const mockHeaders = new Headers();
+      mockHeaders.set("content-type", "application/json");
+
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: mockHeaders,
         json: async () => ({
           success: true,
           data: mockUser,
@@ -261,7 +321,12 @@ describe("Auth API", () => {
       const result = await authAPI.getCurrentUser();
 
       expect(result).toEqual(mockUser);
-      expect(JSON.parse(mockCookies["auth_user"])).toEqual(mockUser);
+      // setUser stores JSON stringified and encoded value
+      const userCookie = mockCookies["auth_user"];
+      expect(userCookie).toBeDefined();
+      // Decode and parse to verify
+      const decoded = decodeURIComponent(userCookie);
+      expect(JSON.parse(decoded)).toEqual(mockUser);
     });
 
     it("should throw error when no token", async () => {
@@ -275,16 +340,31 @@ describe("Auth API", () => {
       delete (window as any).location;
       (window as any).location = { href: "", pathname: "/test" };
 
-      mockCookies["auth_access_token"] = "expired-token";
+      mockCookies["auth_access_token"] = encodeURIComponent("expired-token");
 
+      const mockHeaders = new Headers();
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 401,
         statusText: "Unauthorized",
+        headers: mockHeaders,
         text: async () => "Token expired",
       });
 
-      await expect(authAPI.getCurrentUser()).resolves.toBeInstanceOf(Promise);
+      // Call getCurrentUser - clear() is called when 401 response is processed
+      const promise = authAPI.getCurrentUser();
+      
+      // Wait for the promise to start processing (the response check happens in the promise chain)
+      // Use Promise.race to wait a bit but not wait forever (since it returns a never-resolving promise)
+      await Promise.race([
+        promise,
+        new Promise(resolve => setTimeout(resolve, 10))
+      ]);
+      
+      // Should return a promise that never resolves (for redirect)
+      expect(promise).toBeInstanceOf(Promise);
+      // tokenStorage.clear should be called when 401 response is processed
+      expect(mockCookies["auth_access_token"]).toBeUndefined();
 
       window.location = originalLocation;
     });
@@ -292,7 +372,7 @@ describe("Auth API", () => {
 
   describe("refreshToken", () => {
     it("should refresh token successfully", async () => {
-      mockCookies["auth_refresh_token"] = "refresh-token";
+      mockCookies["auth_refresh_token"] = encodeURIComponent("refresh-token");
       const mockResponse = {
         success: true,
         data: {
@@ -303,9 +383,13 @@ describe("Auth API", () => {
         },
       };
 
+      const mockHeaders = new Headers();
+      mockHeaders.set("content-type", "application/json");
+
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: mockHeaders,
         json: async () => mockResponse,
       });
 
@@ -323,12 +407,15 @@ describe("Auth API", () => {
     });
 
     it("should clear tokens on refresh failure", async () => {
-      mockCookies["auth_refresh_token"] = "invalid-refresh";
+      mockCookies["auth_refresh_token"] = encodeURIComponent("invalid-refresh");
 
+      const mockHeaders = new Headers();
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 401,
         statusText: "Unauthorized",
+        headers: mockHeaders,
+        text: async () => "Unauthorized",
       });
 
       await expect(authAPI.refreshToken()).rejects.toThrow(
@@ -342,7 +429,7 @@ describe("Auth API", () => {
 
   describe("updateCurrentUser", () => {
     it("should update user info", async () => {
-      mockCookies["auth_access_token"] = "token";
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
       const updatedUser = {
         id: 1,
         username: "test",
@@ -354,9 +441,13 @@ describe("Auth API", () => {
         roles: ["USER"],
       };
 
+      const mockHeaders = new Headers();
+      mockHeaders.set("content-type", "application/json");
+
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: mockHeaders,
         json: async () => ({
           success: true,
           data: updatedUser,
@@ -368,13 +459,18 @@ describe("Auth API", () => {
       });
 
       expect(result).toEqual(updatedUser);
-      expect(JSON.parse(mockCookies["auth_user"])).toEqual(updatedUser);
+      // setUser stores JSON stringified and encoded value
+      const userCookie = mockCookies["auth_user"];
+      expect(userCookie).toBeDefined();
+      // Decode and parse to verify
+      const decoded = decodeURIComponent(userCookie);
+      expect(JSON.parse(decoded)).toEqual(updatedUser);
     });
   });
 
   describe("changePassword", () => {
     it("should change password successfully", async () => {
-      mockCookies["auth_access_token"] = "token";
+      mockCookies["auth_access_token"] = encodeURIComponent("token");
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,

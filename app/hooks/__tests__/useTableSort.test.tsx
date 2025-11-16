@@ -141,6 +141,10 @@ describe("useTableSort", () => {
     });
 
     it("should use default sort direction for new field when default is desc", () => {
+      // Clear any existing params
+      mockSearchParams.delete("sortBy");
+      mockSearchParams.delete("sortDir");
+      
       const { result } = renderHook(() =>
         useTableSort({ defaultSortDir: "desc" })
       );

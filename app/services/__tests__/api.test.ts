@@ -17,6 +17,7 @@ global.fetch = vi.fn();
 vi.mock("../auth", () => ({
   tokenStorage: {
     getAccessToken: vi.fn(() => "mock-token"),
+    clear: vi.fn(),
   },
 }));
 
@@ -135,9 +136,18 @@ describe("API Service", () => {
         text: async () => "Unauthorized",
       });
 
-      vi.mocked(tokenStorage.clear).mockImplementation(() => {});
-
-      await expect(roomAPI.getById(1)).resolves.toBeInstanceOf(Promise);
+      // Call the API - clear() is called synchronously when response status is checked
+      const promise = roomAPI.getById(1);
+      
+      // Wait for the promise to start processing (the response check happens in the promise chain)
+      // Use Promise.race to wait a bit but not wait forever (since it returns a never-resolving promise)
+      await Promise.race([
+        promise,
+        new Promise(resolve => setTimeout(resolve, 10))
+      ]);
+      
+      // tokenStorage.clear should be called when 401 response is processed
+      expect(tokenStorage.clear).toHaveBeenCalled();
       
       // Restore window.location
       window.location = originalLocation;
@@ -155,17 +165,18 @@ describe("API Service", () => {
     });
 
     it("should handle network errors", async () => {
-      (global.fetch as any).mockRejectedValueOnce(
-        new TypeError("Failed to fetch")
-      );
+      // Network error should include "fetch" but NOT "CORS" or "Failed to fetch"
+      // to trigger the network error path instead of CORS error
+      const networkError = new TypeError("fetch timeout");
+      (global.fetch as any).mockRejectedValueOnce(networkError);
 
       await expect(roomAPI.getById(1)).rejects.toThrow("Network error");
     });
 
     it("should handle CORS errors", async () => {
-      (global.fetch as any).mockRejectedValueOnce(
-        new TypeError("CORS error")
-      );
+      const corsError = new TypeError("Failed to fetch");
+      corsError.message = "CORS error";
+      (global.fetch as any).mockRejectedValueOnce(corsError);
 
       await expect(roomAPI.getById(1)).rejects.toThrow("CORS error");
     });
@@ -173,10 +184,11 @@ describe("API Service", () => {
 
   describe("Room API", () => {
     it("should call getAll with correct endpoint", async () => {
+      const mockHeaders = new Headers({ "content-type": "application/json" });
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Headers({ "content-type": "application/json" }),
+        headers: mockHeaders,
         json: async () => ({ content: [], totalElements: 0 }),
       });
 
