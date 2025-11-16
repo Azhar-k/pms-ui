@@ -12,6 +12,11 @@ vi.mock("../../services/api", () => ({
   },
 }));
 
+// Mock handleAPIError to prevent it from throwing in error handling tests
+vi.mock("../../utils/auth", () => ({
+  handleAPIError: vi.fn(),
+}));
+
 // Mock the Button component
 vi.mock("../../components/Button", () => ({
   Button: ({ to, children, ...props }: any) => {
@@ -107,11 +112,14 @@ describe("GuestsPage", () => {
 
       expect(result.guestsData.content).toHaveLength(3);
       expect(result.guestsData.totalElements).toBe(3);
-      expect(guestAPI.getAll).toHaveBeenCalledWith({
-        page: 0,
-        size: 10,
-        sortDir: "asc",
-      });
+      expect(guestAPI.getAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 0,
+          size: 10,
+          sortDir: "asc",
+        }),
+        expect.any(Request)
+      );
     });
 
     it("should handle search parameters", async () => {
@@ -120,21 +128,16 @@ describe("GuestsPage", () => {
       const request = new Request("http://localhost/guests?page=1&size=20&sortBy=lastName&sortDir=desc&email=test@example.com");
       const result = await loader({ request });
 
-      expect(guestAPI.getAll).toHaveBeenCalledWith({
-        page: 1,
-        size: 20,
-        sortBy: "lastName",
-        sortDir: "desc",
-        email: "test@example.com",
-        firstName: undefined,
-        lastName: undefined,
-        phoneNumber: undefined,
-        city: undefined,
-        state: undefined,
-        country: undefined,
-        identificationType: undefined,
-        searchTerm: undefined,
-      });
+      expect(guestAPI.getAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          size: 20,
+          sortBy: "lastName",
+          sortDir: "desc",
+          email: "test@example.com",
+        }),
+        expect.any(Request)
+      );
     });
 
     it("should handle API errors gracefully", async () => {
@@ -206,8 +209,13 @@ describe("GuestsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        expect(screen.getByText("Name")).toBeInTheDocument();
-        expect(screen.getByText("Contact")).toBeInTheDocument();
+        // Name and Contact headers are sortable, so use flexible matchers
+        expect(screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Name');
+        })).toBeInTheDocument();
+        expect(screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Contact');
+        })).toBeInTheDocument();
         expect(screen.getByText("Location")).toBeInTheDocument();
         expect(screen.getByText("Actions")).toBeInTheDocument();
       });
@@ -224,7 +232,12 @@ describe("GuestsPage", () => {
         expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
         expect(screen.getByText("+1234567890")).toBeInTheDocument();
         expect(screen.getByText("New York, NY")).toBeInTheDocument();
-        expect(screen.getByText("USA")).toBeInTheDocument();
+        
+        // Find John Doe's row and check for USA within that row
+        const rows = screen.getAllByRole("row");
+        const johnRow = rows.find((row) => row.textContent?.includes("John Doe"));
+        expect(johnRow).toBeInTheDocument();
+        expect(within(johnRow!).getByText("USA")).toBeInTheDocument();
       });
     });
 
@@ -291,7 +304,9 @@ describe("GuestsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const nameHeader = screen.getByText("Name").closest("th");
+        const nameHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Name');
+        }).closest("th");
         expect(nameHeader).toBeInTheDocument();
         expect(nameHeader?.textContent).toContain("⇅");
       });
@@ -305,11 +320,15 @@ describe("GuestsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const nameHeader = screen.getByText("Name").closest("th");
+        const nameHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Name');
+        }).closest("th");
         expect(nameHeader).toBeInTheDocument();
       });
 
-      const nameHeader = screen.getByText("Name").closest("th")!;
+      const nameHeader = screen.getByText((content, element) => {
+        return element?.closest('th') !== null && content.includes('Name');
+      }).closest("th")!;
       await user.click(nameHeader);
 
       await waitFor(() => {
@@ -325,11 +344,16 @@ describe("GuestsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const contactHeader = screen.getByText("Contact").closest("th");
+        // Contact header is sortable, so use flexible matcher
+        const contactHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Contact');
+        }).closest("th");
         expect(contactHeader).toBeInTheDocument();
       });
 
-      const contactHeader = screen.getByText("Contact").closest("th")!;
+      const contactHeader = screen.getByText((content, element) => {
+        return element?.closest('th') !== null && content.includes('Contact');
+      }).closest("th")!;
       await user.click(contactHeader);
 
       await waitFor(() => {
@@ -346,11 +370,15 @@ describe("GuestsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const nameHeader = screen.getByText("Name").closest("th");
+        const nameHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Name');
+        }).closest("th");
         expect(nameHeader).toBeInTheDocument();
       });
 
-      const nameHeader = screen.getByText("Name").closest("th")!;
+      const nameHeader = screen.getByText((content, element) => {
+        return element?.closest('th') !== null && content.includes('Name');
+      }).closest("th")!;
       await user.click(nameHeader);
 
       await waitFor(() => {
