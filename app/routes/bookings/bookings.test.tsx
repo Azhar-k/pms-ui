@@ -258,9 +258,23 @@ describe("BookingsPage", () => {
         expect(screen.getByText("Booking #")).toBeInTheDocument();
         expect(screen.getByText("Guest")).toBeInTheDocument();
         expect(screen.getByText("Room")).toBeInTheDocument();
-        expect(screen.getByText("Dates")).toBeInTheDocument();
-        expect(screen.getByText("Status")).toBeInTheDocument();
-        expect(screen.getByText("Total Amount")).toBeInTheDocument();
+        // Dates, Status, and Total Amount are in sortable headers with icons, so use a flexible matcher
+        // Look for them within table headers (th elements)
+        const datesHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Dates');
+        });
+        expect(datesHeader).toBeInTheDocument();
+        
+        const statusHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Status') && !content.includes('Payment Status') && !content.includes('All Statuses');
+        });
+        expect(statusHeader).toBeInTheDocument();
+        
+        const totalAmountHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Total Amount');
+        });
+        expect(totalAmountHeader).toBeInTheDocument();
+        
         expect(screen.getByText("Actions")).toBeInTheDocument();
       });
     });
@@ -362,7 +376,10 @@ describe("BookingsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const datesHeader = screen.getByText("Dates").closest("th");
+        // Find the Dates header using a flexible matcher since it's in a div with the sort icon
+        const datesHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Dates');
+        }).closest("th");
         expect(datesHeader).toBeInTheDocument();
         expect(datesHeader?.textContent).toContain("⇅");
       });
@@ -376,11 +393,16 @@ describe("BookingsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const datesHeader = screen.getByText("Dates").closest("th");
+        // Find the Dates header using a flexible matcher
+        const datesHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Dates');
+        }).closest("th");
         expect(datesHeader).toBeInTheDocument();
       });
 
-      const datesHeader = screen.getByText("Dates").closest("th")!;
+      const datesHeader = screen.getByText((content, element) => {
+        return element?.closest('th') !== null && content.includes('Dates');
+      }).closest("th")!;
       await user.click(datesHeader);
 
       await waitFor(() => {
@@ -395,18 +417,29 @@ describe("BookingsPage", () => {
       const router = createRouter(["/bookings?sortBy=checkInDate"]);
       render(<RouterProvider router={router} />);
 
+      // Wait for the table to render
       await waitFor(() => {
-        const statusHeader = screen.getByText("Status").closest("th");
+        expect(screen.getByText("Booking #")).toBeInTheDocument();
+        // Find Status header using flexible matcher to avoid matching filter field
+        const statusHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Status') && !content.includes('Payment Status') && !content.includes('All Statuses');
+        });
         expect(statusHeader).toBeInTheDocument();
       });
 
-      const statusHeader = screen.getByText("Status").closest("th")!;
-      await user.click(statusHeader);
+      const statusHeader = screen.getByText((content, element) => {
+        return element?.closest('th') !== null && content.includes('Status') && !content.includes('Payment Status') && !content.includes('All Statuses');
+      }).closest("th");
+      expect(statusHeader).toBeInTheDocument();
+      
+      if (statusHeader) {
+        await user.click(statusHeader);
 
-      await waitFor(() => {
-        expect(router.state.location.search).toContain("sortBy=status");
-        expect(router.state.location.search).toContain("sortDir=desc");
-      });
+        await waitFor(() => {
+          expect(router.state.location.search).toContain("sortBy=status");
+          expect(router.state.location.search).toContain("sortDir=desc");
+        });
+      }
     });
 
     it("should reset to page 0 when sorting", async () => {
@@ -417,11 +450,16 @@ describe("BookingsPage", () => {
       render(<RouterProvider router={router} />);
 
       await waitFor(() => {
-        const datesHeader = screen.getByText("Dates").closest("th");
+        // Find the Dates header using a flexible matcher
+        const datesHeader = screen.getByText((content, element) => {
+          return element?.closest('th') !== null && content.includes('Dates');
+        }).closest("th");
         expect(datesHeader).toBeInTheDocument();
       });
 
-      const datesHeader = screen.getByText("Dates").closest("th")!;
+      const datesHeader = screen.getByText((content, element) => {
+        return element?.closest('th') !== null && content.includes('Dates');
+      }).closest("th")!;
       await user.click(datesHeader);
 
       await waitFor(() => {
