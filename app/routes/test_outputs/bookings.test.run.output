@@ -1,0 +1,35 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90m/home/azhar/Projects/pms-ui[39m
+
+ [31m❯[39m app/routes/bookings/bookings.test.tsx [2m([22m[2m25 tests[22m[2m | [22m[31m10 failed[39m[2m)[22m[33m 8047[2mms[22m[39m
+[31m       [31m×[31m should load bookings successfully[39m[32m 21[2mms[22m[39m
+[31m       [31m×[31m should handle search parameters[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m should handle API errors gracefully[39m[32m 2[2mms[22m[39m
+       [32m✓[39m should handle array response for backward compatibility[32m 2[2mms[22m[39m
+       [32m✓[39m should render the bookings page with title and description[32m 215[2mms[22m[39m
+       [32m✓[39m should render 'Create New Booking' button[32m 48[2mms[22m[39m
+[31m       [31m×[31m should render filter form with all filter fields[39m[33m 1018[2mms[22m[39m
+[31m       [31m×[31m should render bookings table with correct headers[39m[33m 1014[2mms[22m[39m
+       [32m✓[39m should render booking data in table rows[32m 30[2mms[22m[39m
+       [32m✓[39m should render booking number fallback when reservationNumber is null[32m 19[2mms[22m[39m
+       [32m✓[39m should render guest fallback when guest is null[32m 17[2mms[22m[39m
+       [32m✓[39m should render room fallback when room is null[32m 18[2mms[22m[39m
+       [32m✓[39m should render empty state when no bookings[32m 21[2mms[22m[39m
+       [32m✓[39m should render empty state with filter message when filters are applied[32m 14[2mms[22m[39m
+[31m       [31m×[31m should display sort icon for sortable columns[39m[33m 1012[2mms[22m[39m
+[31m       [31m×[31m should change sort direction when clicking same column[39m[33m 1016[2mms[22m[39m
+[31m       [31m×[31m should set new sort column when clicking different column[39m[33m 1014[2mms[22m[39m
+[31m       [31m×[31m should reset to page 0 when sorting[39m[33m 1013[2mms[22m[39m
+       [32m✓[39m should pre-fill filter inputs with search params[32m 30[2mms[22m[39m
+[31m       [31m×[31m should have default page size of 10[39m[33m 1015[2mms[22m[39m
+       [33m[2m✓[22m[39m should render status dropdown with all options [33m 430[2mms[22m[39m
+       [32m✓[39m should apply correct status color classes[32m 18[2mms[22m[39m
+       [32m✓[39m should render pagination when totalPages > 1[32m 16[2mms[22m[39m
+       [32m✓[39m should not render pagination when totalPages <= 1[32m 9[2mms[22m[39m
+       [32m✓[39m should render View link for each booking[32m 25[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m10 failed[39m[22m[2m | [22m[1m[32m15 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m 19:09:00
+[2m   Duration [22m 9.52s[2m (transform 355ms, setup 216ms, collect 458ms, tests 8.05s, environment 612ms, prepare 14ms)[22m
+
