@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import GuestDetailPage, { loader } from "./guests.$id";
-import { guestAPI } from "../../services/api";
+import GuestDetailPage, { loader } from "../../guests/guests.$id";
+import { guestAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   guestAPI: {
     getById: vi.fn(),
   },
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, variant, ...props }: any) => {
     if (to) {
       return <a href={to} data-variant={variant}>{children}</a>;

@@ -2,23 +2,23 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import GuestsPage, { loader } from "./guests";
-import { guestAPI } from "../../services/api";
+import GuestsPage, { loader } from "../../guests/guests";
+import { guestAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   guestAPI: {
     getAll: vi.fn(),
   },
 }));
 
 // Mock handleAPIError to prevent it from throwing in error handling tests
-vi.mock("../../utils/auth", () => ({
+vi.mock("../../../utils/auth", () => ({
   handleAPIError: vi.fn(),
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, ...props }: any) => {
     if (to) {
       return <a href={to}>{children}</a>;
@@ -28,7 +28,7 @@ vi.mock("../../components/Button", () => ({
 }));
 
 // Mock the Pagination component
-vi.mock("../../components/Pagination", () => ({
+vi.mock("../../../components/Pagination", () => ({
   Pagination: ({ currentPage, totalPages, totalElements, pageSize }: any) => {
     if (totalPages <= 1) return null;
     return (

@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import EditGuestPage, { loader, action } from "./guests.$id.edit";
-import { guestAPI } from "../../services/api";
+import EditGuestPage, { loader, action } from "../../guests/guests.$id.edit";
+import { guestAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   guestAPI: {
     getById: vi.fn(),
     update: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock("../../services/api", () => ({
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, type, ...props }: any) => {
     if (to) {
       return <a href={to}>{children}</a>;

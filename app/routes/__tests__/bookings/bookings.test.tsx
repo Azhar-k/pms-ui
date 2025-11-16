@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import BookingsPage, { loader } from "./bookings";
-import { reservationAPI } from "../../services/api";
+import BookingsPage, { loader } from "../../bookings/bookings";
+import { reservationAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   reservationAPI: {
     getAll: vi.fn(),
   },
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, ...props }: any) => {
     if (to) {
       return <a href={to}>{children}</a>;
@@ -23,7 +23,7 @@ vi.mock("../../components/Button", () => ({
 }));
 
 // Mock the Pagination component
-vi.mock("../../components/Pagination", () => ({
+vi.mock("../../../components/Pagination", () => ({
   Pagination: ({ currentPage, totalPages, totalElements, pageSize }: any) => {
     if (totalPages <= 1) return null;
     return (
@@ -36,7 +36,7 @@ vi.mock("../../components/Pagination", () => ({
 }));
 
 // Mock the DateInput component
-vi.mock("../../components/DateInput", () => ({
+vi.mock("../../../components/DateInput", () => ({
   DateInput: ({ label, id, name, defaultValue, ...props }: any) => (
     <div>
       {label && <label htmlFor={id}>{label}</label>}
@@ -46,7 +46,7 @@ vi.mock("../../components/DateInput", () => ({
 }));
 
 // Mock the dateFormat utility
-vi.mock("../../utils/dateFormat", () => ({
+vi.mock("../../../utils/dateFormat", () => ({
   formatDisplayDate: (date: string | Date) => {
     if (!date) return "N/A";
     const d = typeof date === "string" ? new Date(date) : date;
@@ -58,8 +58,8 @@ vi.mock("../../utils/dateFormat", () => ({
 }));
 
 // Mock handleAPIError to allow testing error handling
-vi.mock("../../utils/auth", async () => {
-  const actual = await vi.importActual("../../utils/auth");
+vi.mock("../../../utils/auth", async () => {
+  const actual = await vi.importActual("../../../utils/auth");
   return {
     ...actual,
     handleAPIError: vi.fn((error, request) => {

@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import NewGuestPage, { action } from "./guests.new";
-import { guestAPI } from "../../services/api";
+import NewGuestPage, { action } from "../../guests/guests.new";
+import { guestAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   guestAPI: {
     create: vi.fn(),
   },
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, type, ...props }: any) => {
     if (to) {
       return <a href={to}>{children}</a>;

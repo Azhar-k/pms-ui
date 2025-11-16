@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import NewBookingPage, { loader, action } from "./bookings.new";
-import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../../services/api";
+import NewBookingPage, { loader, action } from "../../bookings/bookings.new";
+import { guestAPI, roomAPI, rateTypeAPI, reservationAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   guestAPI: {
     getAll: vi.fn(),
   },
@@ -23,7 +23,7 @@ vi.mock("../../services/api", () => ({
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, type, ...props }: any) => {
     if (to) {
       return <a href={to}>{children}</a>;
@@ -33,7 +33,7 @@ vi.mock("../../components/Button", () => ({
 }));
 
 // Mock the DateInput component
-vi.mock("../../components/DateInput", () => ({
+vi.mock("../../../components/DateInput", () => ({
   DateInput: ({ label, id, name, value, onChange, required, ...props }: any) => (
     <div>
       {label && <label htmlFor={id}>{label} {required && "*"}</label>}
@@ -51,8 +51,8 @@ vi.mock("../../components/DateInput", () => ({
 }));
 
 // Mock handleAPIError to allow testing error handling
-vi.mock("../../utils/auth", async () => {
-  const actual = await vi.importActual("../../utils/auth");
+vi.mock("../../../utils/auth", async () => {
+  const actual = await vi.importActual("../../../utils/auth");
   return {
     ...actual,
     handleAPIError: vi.fn((error, request) => {

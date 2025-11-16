@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import BookingDetailPage, { loader, action } from "./bookings.$id";
-import { reservationAPI, invoiceAPI } from "../../services/api";
+import BookingDetailPage, { loader, action } from "../../bookings/bookings.$id";
+import { reservationAPI, invoiceAPI } from "../../../services/api";
 
 // Mock the API
-vi.mock("../../services/api", () => ({
+vi.mock("../../../services/api", () => ({
   reservationAPI: {
     getById: vi.fn(),
     checkIn: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock("../../services/api", () => ({
 }));
 
 // Mock the Button component
-vi.mock("../../components/Button", () => ({
+vi.mock("../../../components/Button", () => ({
   Button: ({ to, children, type, variant, className, ...props }: any) => {
     if (to) {
       return <a href={to} data-variant={variant} className={className}>{children}</a>;
@@ -29,7 +29,7 @@ vi.mock("../../components/Button", () => ({
 }));
 
 // Mock the dateFormat utility
-vi.mock("../../utils/dateFormat", () => ({
+vi.mock("../../../utils/dateFormat", () => ({
   formatDisplayDate: (date: string | Date) => {
     if (!date) return "N/A";
     const d = typeof date === "string" ? new Date(date) : date;
