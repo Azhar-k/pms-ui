@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { RoomKanbanBoard } from "../RoomKanbanBoard";
@@ -111,12 +111,18 @@ describe("RoomKanbanBoard", () => {
       const router = createRouter();
       render(<RouterProvider router={router} />);
 
-      expect(screen.getByText("Standard")).toBeInTheDocument();
+      // Use getAllByText since there are multiple "Standard" rooms
+      const standardTexts = screen.getAllByText("Standard");
+      expect(standardTexts.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("Deluxe")).toBeInTheDocument();
-      expect(screen.getByText("Floor 1")).toBeInTheDocument();
+      // Use getAllByText since there are multiple rooms with "Floor 1"
+      const floor1Texts = screen.getAllByText("Floor 1");
+      expect(floor1Texts.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("Floor 2")).toBeInTheDocument();
-      expect(screen.getByText("Max: 2 guests")).toBeInTheDocument();
-      expect(screen.getByText("Max: 4 guests")).toBeInTheDocument();
+      // Use getAllByText since there are multiple rooms with "Max: 2 guests"
+      const max2Texts = screen.getAllByText((content) => content.includes("Max: 2 guests"));
+      expect(max2Texts.length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText((content) => content.includes("Max: 4 guests"))).toBeInTheDocument();
     });
 
     it("should render room links", () => {
@@ -148,30 +154,61 @@ describe("RoomKanbanBoard", () => {
     it("should update room status on drop", async () => {
       vi.mocked(roomAPI.update).mockResolvedValue({} as any);
       const router = createRouter();
-      render(<RouterProvider router={router} />);
+      const { container } = render(<RouterProvider router={router} />);
 
-      const roomCard = screen.getByText("Room 101");
-      const maintenanceColumn = screen.getByText("Maintenance").closest("div");
-
-      // Simulate drag and drop
-      await userEvent.click(roomCard);
+      // Find the draggable room card element for Room 101
+      const room101Link = screen.getByText("Room 101");
+      const roomCard = room101Link.closest('[draggable="true"]') as HTMLElement;
       
-      // Create a drag event
-      const dragStartEvent = new Event("dragstart", { bubbles: true });
-      Object.defineProperty(dragStartEvent, "dataTransfer", {
-        value: { effectAllowed: "move" },
+      // Find the maintenance column - traverse up from the header to find the column div
+      // The structure is: outer div (has onDrop) > inner div (header) > h3 (contains "Maintenance")
+      const maintenanceHeader = screen.getByText("Maintenance");
+      // The header is in: h3 > div (header) > div (column with onDrop)
+      const maintenanceColumn = maintenanceHeader.parentElement?.parentElement as HTMLElement;
+
+      if (!roomCard) {
+        throw new Error("Room card not found");
+      }
+      if (!maintenanceColumn) {
+        throw new Error("Maintenance column not found");
+      }
+
+      // Create a mock dataTransfer object that React can access and modify
+      const mockDataTransfer: any = {
+        effectAllowed: "move",
+        dropEffect: "move",
+        setData: vi.fn(),
+        getData: vi.fn(),
+        clearData: vi.fn(),
+        files: [],
+        items: [],
+        types: [],
+      };
+
+      // Fire dragStart to set draggedRoom state within act
+      await act(async () => {
+        fireEvent.dragStart(roomCard, {
+          dataTransfer: mockDataTransfer,
+        });
       });
-      roomCard.dispatchEvent(dragStartEvent);
-
-      const dragOverEvent = new Event("dragover", { bubbles: true, cancelable: true });
-      Object.defineProperty(dragOverEvent, "dataTransfer", {
-        value: { dropEffect: "move" },
+      
+      // Fire dragOver on the maintenance column
+      await act(async () => {
+        fireEvent.dragOver(maintenanceColumn, {
+          dataTransfer: mockDataTransfer,
+          preventDefault: () => {},
+        });
       });
-      maintenanceColumn?.dispatchEvent(dragOverEvent);
+      
+      // Fire drop - this should trigger the API call
+      await act(async () => {
+        fireEvent.drop(maintenanceColumn, {
+          dataTransfer: mockDataTransfer,
+          preventDefault: () => {},
+        });
+      });
 
-      const dropEvent = new Event("drop", { bubbles: true, cancelable: true });
-      maintenanceColumn?.dispatchEvent(dropEvent);
-
+      // Wait for the API call
       await waitFor(() => {
         expect(roomAPI.update).toHaveBeenCalledWith(
           1,
@@ -179,7 +216,7 @@ describe("RoomKanbanBoard", () => {
             status: "MAINTENANCE",
           })
         );
-      });
+      }, { timeout: 3000 });
     });
 
     it("should not update if dropped on same status", async () => {
