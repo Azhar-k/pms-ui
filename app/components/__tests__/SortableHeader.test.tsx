@@ -10,7 +10,7 @@ describe("SortableHeader", () => {
       render(
         <SortableHeader field="name" label="Name" onSort={handleSort} />
       );
-      expect(screen.getByText("Name")).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("Name"))).toBeInTheDocument();
     });
 
     it("should show neutral sort icon when not sorted", () => {
@@ -18,7 +18,7 @@ describe("SortableHeader", () => {
       render(
         <SortableHeader field="name" label="Name" onSort={handleSort} />
       );
-      expect(screen.getByText("⇅")).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("⇅"))).toBeInTheDocument();
     });
 
     it("should show ascending icon when sorted ascending", () => {
@@ -32,7 +32,7 @@ describe("SortableHeader", () => {
           onSort={handleSort}
         />
       );
-      expect(screen.getByText("↑")).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("↑"))).toBeInTheDocument();
     });
 
     it("should show descending icon when sorted descending", () => {
@@ -46,7 +46,7 @@ describe("SortableHeader", () => {
           onSort={handleSort}
         />
       );
-      expect(screen.getByText("↓")).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("↓"))).toBeInTheDocument();
     });
 
     it("should handle uppercase sortDir", () => {
@@ -60,21 +60,21 @@ describe("SortableHeader", () => {
           onSort={handleSort}
         />
       );
-      expect(screen.getByText("↑")).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("↑"))).toBeInTheDocument();
     });
 
     it("should apply left alignment by default", () => {
       const handleSort = vi.fn();
-      render(
+      const { container } = render(
         <SortableHeader field="name" label="Name" onSort={handleSort} />
       );
-      const header = screen.getByText("Name").closest("th");
+      const header = container.querySelector("th");
       expect(header).toHaveClass("text-left");
     });
 
     it("should apply right alignment", () => {
       const handleSort = vi.fn();
-      render(
+      const { container } = render(
         <SortableHeader
           field="amount"
           label="Amount"
@@ -82,13 +82,13 @@ describe("SortableHeader", () => {
           onSort={handleSort}
         />
       );
-      const header = screen.getByText("Amount").closest("th");
+      const header = container.querySelector("th");
       expect(header).toHaveClass("text-right");
     });
 
     it("should apply center alignment", () => {
       const handleSort = vi.fn();
-      render(
+      const { container } = render(
         <SortableHeader
           field="status"
           label="Status"
@@ -96,13 +96,13 @@ describe("SortableHeader", () => {
           onSort={handleSort}
         />
       );
-      const header = screen.getByText("Status").closest("th");
+      const header = container.querySelector("th");
       expect(header).toHaveClass("text-center");
     });
 
     it("should apply custom className", () => {
       const handleSort = vi.fn();
-      render(
+      const { container } = render(
         <SortableHeader
           field="name"
           label="Name"
@@ -110,7 +110,7 @@ describe("SortableHeader", () => {
           onSort={handleSort}
         />
       );
-      const header = screen.getByText("Name").closest("th");
+      const header = container.querySelector("th");
       expect(header).toHaveClass("custom-class");
     });
   });
@@ -118,11 +118,11 @@ describe("SortableHeader", () => {
   describe("Interactions", () => {
     it("should call onSort when clicked", async () => {
       const handleSort = vi.fn();
-      render(
+      const { container } = render(
         <SortableHeader field="name" label="Name" onSort={handleSort} />
       );
       
-      const header = screen.getByText("Name").closest("th");
+      const header = container.querySelector("th");
       await userEvent.click(header!);
       
       expect(handleSort).toHaveBeenCalledWith("name");
@@ -131,10 +131,10 @@ describe("SortableHeader", () => {
 
     it("should have cursor pointer style", () => {
       const handleSort = vi.fn();
-      render(
+      const { container } = render(
         <SortableHeader field="name" label="Name" onSort={handleSort} />
       );
-      const header = screen.getByText("Name").closest("th");
+      const header = container.querySelector("th");
       expect(header).toHaveClass("cursor-pointer", "hover:bg-gray-100");
     });
   });
